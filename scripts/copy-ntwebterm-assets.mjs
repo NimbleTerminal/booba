@@ -24,7 +24,7 @@ for (const entry of readdirSync(destination, { withFileTypes: true })) {
     }
 }
 
-// Compatibility for booba 0.11; remove in 0.12.
+// Retain the 0.11 compatibility paths through the 0.12 namespace migration.
 const legacy = new URL('../serve/static/ghostty-web/', import.meta.url);
 mkdirSync(legacy, { recursive: true });
 for (const entry of readdirSync(legacy, { withFileTypes: true })) {

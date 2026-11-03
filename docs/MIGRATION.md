@@ -38,11 +38,12 @@ Infrastructure files were left untouched; no new plan or deployment was needed.
 
 ## Remaining release gates
 
-1. Refresh ntwebterm in a separate commit, together with regenerated assets:
-   built `fa8b2aecd00f326b29e7c4f7765a221a3b6274c3`, source
-   `f65a610ceed7133b1136e94f0a1483858659294e`. Current pin remains
-   `c65b87dae3cd603e1303745c4feaa53f5b5710c5`. Verify provenance and preserve
-   the `static/ghostty-web/` compatibility alias.
+1. ntwebterm refresh completed locally: built
+   `fa8b2aecd00f326b29e7c4f7765a221a3b6274c3`, source
+   `f65a610ceed7133b1136e94f0a1483858659294e` (v0.4.1).
+   The built commit's parent is the source; only generated distribution files
+   were added. [Artifact CI run](https://github.com/NimbleTerminal/ntwebterm/actions/runs/41725357818)
+   completed successfully for that source. The `static/ghostty-web/` alias remains.
 2. Fix npm distribution: the local devDependency `file:third_party/ntwebterm`
    cannot satisfy emitted bare imports in consumer projects. Inspect JS and
    declarations, provide portable runtime/types/WASM, pack, and test a fresh
@@ -80,3 +81,17 @@ Passed: `go mod tidy` (no go.sum changes), `go test ./...`, `go vet ./...`,
 TestEnvDefaults assumes those variables are absent; production preserves overrides.
 The website rendering tests passed with `/booba` and the unchanged separate
 `NimbleMarkets/go-booba-example` link.
+
+## ntwebterm refresh validation
+
+Passed `task --force build-serve-assets`, `task test`, `task build`, and
+`task build-npm`. Tests ran with TERM_PROGRAM and COLORTERM unset as above:
+24 TypeScript test files / 163 tests, native Go tests, and js/wasm tests passed.
+The real embedded bundle/WASM tests cover terminal parsing, cursor reports,
+Kitty shared-memory image decoding, and legacy import/WASM compatibility.
+Only ntwebterm.js changed among runtime assets; WASM and Vite chunks are unchanged.
+A second forced regeneration was byte-identical, and every embedded ntwebterm
+runtime file matches the pinned distribution. `git diff --check` passed.
+The lockfile records the installed local ntwebterm package as 0.4.1.
+Interactive browser rendering, paste, resize, scrollback, and renderer checks
+remain part of the release validation gate; unit tests do not establish those.

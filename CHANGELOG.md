@@ -1,5 +1,14 @@
 # `booba` CHANGELOG
 
+## [0.12.0] - Unreleased
+
+### Changed
+
+- Refresh ntwebterm to v0.4.1, built commit `fa8b2ae` from source `f65a610`.
+  Includes upstream input/paste, lifecycle, scrollback, and renderer fixes.
+- Extend the `static/ghostty-web/` compatibility paths through 0.12 while
+  consumers migrate to the vanity module path, superseding the removal date below.
+
 ## [0.11.0] - 2026-10-31
 
 ### Changed
