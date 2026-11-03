@@ -254,7 +254,7 @@ tasks:
       - go run ./cmd/wasm-build
 
   site-serve:
-    desc: 'Serve the generated demo site at http://localhost:3000/go-booba/'
+    desc: 'Serve the generated demo site at http://localhost:3000/booba/'
     preconditions:
       - sh: test -f web/index.html
         msg: "web/index.html is missing; run `task site` first"
@@ -263,8 +263,8 @@ tasks:
       - sh: '! lsof -nP -iTCP:3000 -sTCP:LISTEN -t >/dev/null'
         msg: "port 3000 is already in use; stop that server first (lsof -nP -iTCP:3000 -sTCP:LISTEN)"
     cmds:
-      - rm -rf bin/site && mkdir -p bin/site/go-booba
-      - cp -R web/. bin/site/go-booba/
+      - rm -rf bin/site && mkdir -p bin/site/booba
+      - cp -R web/. bin/site/booba/
       - npx -y serve -l 3000 --no-port-switching bin/site
 
   clean-cmds:

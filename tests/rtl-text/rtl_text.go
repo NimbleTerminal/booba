@@ -19,7 +19,7 @@ import (
 
 	tea "charm.land/bubbletea/v2"
 	"charm.land/lipgloss/v2"
-	"github.com/NimbleMarkets/go-booba"
+	"nimbleterminal.dev/booba"
 	"github.com/spf13/pflag"
 )
 

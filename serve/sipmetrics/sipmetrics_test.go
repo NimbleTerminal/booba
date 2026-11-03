@@ -9,8 +9,8 @@ import (
 
 	"github.com/prometheus/client_golang/prometheus"
 
-	"github.com/NimbleMarkets/go-booba/serve"
-	"github.com/NimbleMarkets/go-booba/serve/sipmetrics"
+	"nimbleterminal.dev/booba/serve"
+	"nimbleterminal.dev/booba/serve/sipmetrics"
 )
 
 type fakeSession struct {

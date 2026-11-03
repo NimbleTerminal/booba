@@ -12,7 +12,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/NimbleMarkets/go-booba/sip"
+	"nimbleterminal.dev/booba/sip"
 	"github.com/coder/websocket"
 )
 

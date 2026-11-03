@@ -24,7 +24,7 @@ tracking disabled, touches retain the existing browser scrolling behavior.
 Touch modifiers are not supported. Read-only terminals and `disableStdin` do not
 send gesture input.
 
-Try the [touch and mouse tracking demo](https://nimblemarkets.github.io/go-booba/demos/tracking/)
+Try the [touch and mouse tracking demo](https://nimbleterminal.github.io/booba/demos/tracking/)
 to inspect press, motion, release, and wheel input without running a Go program.
 Its keyboard starts off so gestures do not open the on-screen keyboard. This is
 a demo-specific policy: it makes the editable input read-only and uses
@@ -100,7 +100,7 @@ await booba.init();
 booba.connectWasm(16); // Poll every 16ms (~60fps)
 ```
 
-**Go side**: Use `booba.Run` or `booba.NewProgram` (from `github.com/NimbleMarkets/go-booba`) as the entry point — these wire up the JS bridge automatically when compiled with `GOARCH=wasm GOOS=js`. Your module's `go.mod` needs the patched-bubbletea `replace` directive first (see the README's browser-embedding section — replace directives don't propagate from booba's `go.mod`). Then build with a standard Go build:
+**Go side**: Use `booba.Run` or `booba.NewProgram` (from `nimbleterminal.dev/booba`) as the entry point — these wire up the JS bridge automatically when compiled with `GOARCH=wasm GOOS=js`. Your module's `go.mod` needs the patched-bubbletea `replace` directive first (see the README's browser-embedding section — replace directives don't propagate from booba's `go.mod`). Then build with a standard Go build:
 
 ```sh
 GOOS=js GOARCH=wasm go build -o web/app.wasm ./cmd/myapp/
@@ -109,7 +109,7 @@ GOOS=js GOARCH=wasm go build -o web/app.wasm ./cmd/myapp/
 **Scaffolding the `web/` directory**: The compiled `app.wasm` needs supporting files alongside it — Go's `wasm_exec.js` runtime shim, the `booba/` terminal wrapper, the `ntwebterm/` emulator assets, and an `index.html` host page. The `booba-assets` tool populates all of these:
 
 ```sh
-go run github.com/NimbleMarkets/go-booba/cmd/booba-assets web/
+go run nimbleterminal.dev/booba/cmd/booba-assets web/
 GOOS=js GOARCH=wasm go build -o web/app.wasm ./cmd/myapp/
 ```
 

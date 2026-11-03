@@ -10,8 +10,8 @@ import (
 
 	tea "charm.land/bubbletea/v2"
 
-	"github.com/NimbleMarkets/go-booba/serve"
-	"github.com/NimbleMarkets/go-booba/serve/middleware/recover"
+	"nimbleterminal.dev/booba/serve"
+	"nimbleterminal.dev/booba/serve/middleware/recover"
 )
 
 type fakeSession struct{ serve.Session }

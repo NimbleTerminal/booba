@@ -5,7 +5,7 @@ package booba
 import (
 	tea "charm.land/bubbletea/v2"
 
-	"github.com/NimbleMarkets/go-booba/wasm"
+	"nimbleterminal.dev/booba/wasm"
 )
 
 // Program wraps a BubbleTea program for the browser.

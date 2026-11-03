@@ -10,7 +10,7 @@ import (
 
 	tea "charm.land/bubbletea/v2"
 
-	"github.com/NimbleMarkets/go-booba/serve"
+	"nimbleterminal.dev/booba/serve"
 )
 
 type config struct {

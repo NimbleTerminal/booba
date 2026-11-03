@@ -17,7 +17,7 @@ import (
 
 	"github.com/coder/websocket"
 
-	"github.com/NimbleMarkets/go-booba/sip"
+	"nimbleterminal.dev/booba/sip"
 )
 
 func TestWSE2E_ConnectsAfterValidResizeAndSendsOptionsFirst(t *testing.T) {

@@ -3,7 +3,7 @@ package termhost
 import (
 	"testing"
 
-	"github.com/NimbleMarkets/go-booba/actions"
+	"nimbleterminal.dev/booba/actions"
 )
 
 func TestKeyPress(t *testing.T) {

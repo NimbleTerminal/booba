@@ -4,8 +4,8 @@ package actiontest
 import (
 	"charm.land/bubbles/v2/key"
 	tea "charm.land/bubbletea/v2"
-	"github.com/NimbleMarkets/go-booba/actions"
-	"github.com/NimbleMarkets/go-booba/actions/bubblehelp"
+	"nimbleterminal.dev/booba/actions"
+	"nimbleterminal.dev/booba/actions/bubblehelp"
 )
 
 type Keys struct{ Primary, More []key.Binding }

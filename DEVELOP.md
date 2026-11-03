@@ -34,7 +34,7 @@ automatically if it is not already installed.
 booba vendors [`ntwebterm`](https://github.com/NimbleTerminal/ntwebterm) (NimbleMarkets fork) as a git submodule at `third_party/ntwebterm`. Clone with submodules:
 
 ```sh
-git clone --recurse-submodules https://github.com/NimbleMarkets/go-booba.git
+git clone --recurse-submodules https://github.com/NimbleTerminal/booba.git
 # or after a regular clone:
 git submodule update --init --recursive
 ```
@@ -84,7 +84,7 @@ The patched BubbleTea (via the `replace` directive — see [BubbleTea Integratio
 `app.wasm` needs supporting files alongside it to run in a browser. The `booba-assets` tool scaffolds a complete `web/` directory (`wasm_exec.js`, `booba/`, `ntwebterm/`, starter `index.html`):
 
 ```sh
-go get -tool github.com/NimbleMarkets/go-booba/cmd/booba-assets@v0.8.0
+go get -tool nimbleterminal.dev/booba/cmd/booba-assets@v0.12.0
 go tool booba-assets web/
 GOOS=js GOARCH=wasm go build -o web/app.wasm ./cmd/myapp/
 ```

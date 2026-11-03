@@ -1,4 +1,4 @@
-module github.com/NimbleMarkets/go-booba
+module nimbleterminal.dev/booba
 
 go 1.26.8
 

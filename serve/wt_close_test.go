@@ -17,7 +17,7 @@ import (
 
 	"github.com/quic-go/webtransport-go"
 
-	"github.com/NimbleMarkets/go-booba/sip"
+	"nimbleterminal.dev/booba/sip"
 )
 
 // slowReaderSession emits "hello" as its only output and then signals done.

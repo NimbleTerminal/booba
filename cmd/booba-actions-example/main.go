@@ -12,9 +12,9 @@ import (
 	"charm.land/bubbles/v2/help"
 	"charm.land/bubbles/v2/key"
 	tea "charm.land/bubbletea/v2"
-	booba "github.com/NimbleMarkets/go-booba"
-	"github.com/NimbleMarkets/go-booba/actions"
-	"github.com/NimbleMarkets/go-booba/actions/bubblehelp"
+	booba "nimbleterminal.dev/booba"
+	"nimbleterminal.dev/booba/actions"
+	"nimbleterminal.dev/booba/actions/bubblehelp"
 )
 
 type keymap struct {

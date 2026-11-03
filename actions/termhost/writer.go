@@ -7,7 +7,7 @@ import (
 	"sync"
 	"sync/atomic"
 
-	"github.com/NimbleMarkets/go-booba/actions"
+	"nimbleterminal.dev/booba/actions"
 )
 
 // maxCarry bounds the bytes held back while waiting for an OSC terminator. An

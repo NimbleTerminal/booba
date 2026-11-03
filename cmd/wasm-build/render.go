@@ -9,7 +9,7 @@ import (
 )
 
 // basePath is the site's path prefix on GitHub Pages.
-const basePath = "/go-booba"
+const basePath = "/booba"
 
 // fragmentPath returns the template file for a demo's page fragment.
 func fragmentPath(tmplDir, page string) string {

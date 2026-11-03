@@ -13,8 +13,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/NimbleMarkets/go-booba/actions"
-	"github.com/NimbleMarkets/go-booba/sip"
+	"nimbleterminal.dev/booba/actions"
+	"nimbleterminal.dev/booba/sip"
 	"github.com/coder/websocket"
 )
 

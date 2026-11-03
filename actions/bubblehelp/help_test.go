@@ -3,7 +3,7 @@ package bubblehelp
 import (
 	"charm.land/bubbles/v2/key"
 	"encoding/json"
-	"github.com/NimbleMarkets/go-booba/actions"
+	"nimbleterminal.dev/booba/actions"
 	"strings"
 	"testing"
 )

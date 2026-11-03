@@ -14,7 +14,7 @@ import (
 	"github.com/coder/websocket"
 	"github.com/quic-go/webtransport-go"
 
-	"github.com/NimbleMarkets/go-booba/sip"
+	"nimbleterminal.dev/booba/sip"
 )
 
 const (

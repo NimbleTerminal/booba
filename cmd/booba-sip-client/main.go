@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/NimbleMarkets/go-booba/internal/sipclient"
+	"nimbleterminal.dev/booba/internal/sipclient"
 )
 
 func main() {

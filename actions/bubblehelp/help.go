@@ -8,7 +8,7 @@ import (
 
 	"charm.land/bubbles/v2/help"
 	"charm.land/bubbles/v2/key"
-	"github.com/NimbleMarkets/go-booba/actions"
+	"nimbleterminal.dev/booba/actions"
 	"github.com/charmbracelet/x/ansi"
 )
 

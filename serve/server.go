@@ -27,7 +27,7 @@ import (
 	"github.com/quic-go/quic-go/http3"
 	"github.com/quic-go/webtransport-go"
 
-	"github.com/NimbleMarkets/go-booba/sip"
+	"nimbleterminal.dev/booba/sip"
 )
 
 // Match runtime files explicitly so development artifacts and Go source are

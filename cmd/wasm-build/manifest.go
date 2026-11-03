@@ -11,7 +11,7 @@ import (
 )
 
 // repoURL is where demo source links point.
-const repoURL = "https://github.com/NimbleMarkets/go-booba/tree/main/"
+const repoURL = "https://github.com/NimbleTerminal/booba/tree/main/"
 
 type Manifest struct {
 	Groups []Group `yaml:"groups"`

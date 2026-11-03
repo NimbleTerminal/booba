@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/NimbleMarkets/go-booba/sip"
+	"nimbleterminal.dev/booba/sip"
 )
 
 // ErrSessionClosed is returned by Router.Route when a MsgClose frame is

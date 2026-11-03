@@ -14,7 +14,7 @@ import (
 
 	"github.com/coder/websocket"
 
-	"github.com/NimbleMarkets/go-booba/sip"
+	"nimbleterminal.dev/booba/sip"
 )
 
 // blockingTTY's Read blocks forever on the pipe until Close is called.

@@ -15,7 +15,7 @@ snapshot, diagnostics, err := bubblehelp.Snapshot(
 )
 ```
 
-Import `github.com/NimbleMarkets/go-booba/actions/bubblehelp`. Handle `err` before publishing, and inspect diagnostics for unsupported key strings. Disabled and unbound bindings are omitted by default. Set `IncludeDisabled` to retain disabled controls.
+Import `nimbleterminal.dev/booba/actions/bubblehelp`. Handle `err` before publishing, and inspect diagnostics for unsupported key strings. Disabled and unbound bindings are omitted by default. Set `IncludeDisabled` to retain disabled controls.
 
 Each key in a help entry is independently selectable. An entry with up/down must expose both gestures. If keys are aliases, `Options.Customize` can set `Action.Preferred` to the desired key index, and optionally assign an explicit ID or label. Generated IDs are eight hexadecimal characters based on the complete original binding; exact copies share an ID across both help presentations. Changing a label or keys changes that generated ID. The adapter currently merges identical entries; represent intentionally distinct actions with distinct binding metadata.
 
@@ -120,7 +120,7 @@ booba.setActionKeyEncoder({
 
 `hostEncoder` can instead be supplied by the embedding application. It must encode a complete gesture according to current terminal modes, including releases where required. Returning `null` declines activation. Do not implement it by concatenating help text or dispatching a synthetic browser event. The API deliberately has no default encoder that could silently send an incorrect key.
 
-`installActionBar`, `ActionController`, `decodeActionSnapshot`, and their types are exported from `@nimblemarkets/booba`. For custom controls, read `controller.snapshot`, subscribe to changes with `subscribe`, and use `capture(actionID, keyIndex)` to bind activation. Captured activations become invalid after replacement or clearing. The snapshot getter returns a defensive copy. Call the returned unsubscribe or action-bar disposer during teardown.
+`installActionBar`, `ActionController`, `decodeActionSnapshot`, and their types are exported from `@nimbleterminal/booba`. For custom controls, read `controller.snapshot`, subscribe to changes with `subscribe`, and use `capture(actionID, keyIndex)` to bind activation. Captured activations become invalid after replacement or clearing. The snapshot getter returns a defensive copy. Call the returned unsubscribe or action-bar disposer during teardown.
 
 The action bar wraps compact controls to available width, exposes full help through More/Less, retains short-only controls in the expanded view, and sends keys only on activation. Labels are plain text. Touch buttons do not focus the terminal textarea. The optional Keyboard button deliberately does.
 

@@ -1,6 +1,6 @@
 {
-  "name": "@nimblemarkets/booba",
-  "version": "0.11.0",
+  "name": "@nimbleterminal/booba",
+  "version": "0.12.0",
   "type": "module",
   "description": "Terminal wrapper for BubbleTea programs using ntwebterm",
   "main": "dist/booba.js",
@@ -26,7 +26,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/NimbleMarkets/go-booba.git"
+    "url": "https://github.com/NimbleTerminal/booba.git"
   },
   "license": "MIT",
   "devDependencies": {

@@ -6,7 +6,7 @@ import (
 
 	"charm.land/bubbles/v2/key"
 	tea "charm.land/bubbletea/v2"
-	"github.com/NimbleMarkets/go-booba/actions"
+	"nimbleterminal.dev/booba/actions"
 	uv "github.com/charmbracelet/ultraviolet"
 )
 

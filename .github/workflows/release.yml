@@ -10,6 +10,8 @@ permissions:
 
 jobs:
   release-binaries:
+    # Enable only after history import, CI, and publication setup are validated.
+    if: github.repository == 'NimbleTerminal/booba' && vars.RELEASE_ENABLED == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -47,6 +49,7 @@ jobs:
           MACOS_NOTARY_KEY: ${{ secrets.MACOS_NOTARY_KEY }}
 
   publish-npm:
+    if: vars.GITHUB_PACKAGES_ENABLED == 'true'
     runs-on: ubuntu-latest
     needs: [release-binaries]
     steps:

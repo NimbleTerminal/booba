@@ -4,7 +4,7 @@ import (
 	"unicode/utf8"
 
 	tea "charm.land/bubbletea/v2"
-	"github.com/NimbleMarkets/go-booba/actions"
+	"nimbleterminal.dev/booba/actions"
 )
 
 var namedKeys = map[string]rune{

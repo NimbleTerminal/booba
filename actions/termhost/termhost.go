@@ -22,7 +22,7 @@ import (
 	"time"
 
 	tea "charm.land/bubbletea/v2"
-	"github.com/NimbleMarkets/go-booba/actions"
+	"nimbleterminal.dev/booba/actions"
 )
 
 // Mode is the host's relationship to the terminal.

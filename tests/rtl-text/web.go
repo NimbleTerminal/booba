@@ -7,8 +7,8 @@ import (
 	"log"
 
 	tea "charm.land/bubbletea/v2"
-	"github.com/NimbleMarkets/go-booba/internal/cli"
-	"github.com/NimbleMarkets/go-booba/serve"
+	"nimbleterminal.dev/booba/internal/cli"
+	"nimbleterminal.dev/booba/serve"
 	"github.com/spf13/pflag"
 )
 

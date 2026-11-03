@@ -11,7 +11,7 @@
 //	import (
 //	    "log"
 //
-//	    booba "github.com/NimbleMarkets/go-booba"
+//	    booba "nimbleterminal.dev/booba"
 //	)
 //
 //	func main() {
@@ -29,7 +29,7 @@
 //	}
 //
 // For more granular control, subpackages are available:
-//   - [github.com/NimbleMarkets/go-booba/wasm] exposes the browser bridge directly.
-//   - [github.com/NimbleMarkets/go-booba/serve] runs a BubbleTea program as an
+//   - [nimbleterminal.dev/booba/wasm] exposes the browser bridge directly.
+//   - [nimbleterminal.dev/booba/serve] runs a BubbleTea program as an
 //     HTTP/WebSocket/WebTransport backend for browser clients.
 package booba

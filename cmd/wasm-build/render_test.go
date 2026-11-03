@@ -27,16 +27,16 @@ func TestRenderProducesAllPages(t *testing.T) {
 	index := filepath.Join(out, "index.html")
 	mustContain(t, index,
 		"Multiple views", "Touch controls",
-		`href="/go-booba/demos/views/"`, `href="/go-booba/style.css"`,
+		`href="/booba/demos/views/"`, `href="/booba/style.css"`,
 		"Press <kbd>Enter</kbd>",
 		"Serving a program", "github.com/NimbleMarkets/go-booba-example")
 
 	views := filepath.Join(out, "demos", "views", "index.html")
 	mustContain(t, views,
 		"Multiple views", "sidebar-link-active",
-		"https://github.com/NimbleMarkets/go-booba/tree/main/cmd/booba-view-example",
+		"https://github.com/NimbleTerminal/booba/tree/main/cmd/booba-view-example",
 		"go run ./cmd/booba-view-example",
-		`src="/go-booba/_assets/wasm_exec.js"`, `_assets/booba/booba.js`,
+		`src="/booba/_assets/wasm_exec.js"`, `_assets/booba/booba.js`,
 		`fetch("./app.wasm")`, "connectWasm()",
 		`getElementById("terminal")`, "installStatusBar", "demo-status",
 		`id="restart"`, "compileStreaming", "WebAssembly.instantiate(module",
@@ -78,7 +78,7 @@ func TestBrowserOnlyDemoHasNoGoRuntime(t *testing.T) {
 		t.Fatal(err)
 	}
 	page := filepath.Join(out, "demos", "tracking", "index.html")
-	mustContain(t, filepath.Join(out, "index.html"), `href="/go-booba/demos/tracking/"`)
+	mustContain(t, filepath.Join(out, "index.html"), `href="/booba/demos/tracking/"`)
 	mustContain(t, page, "Touch and mouse tracking", "installTouchTrackingDemo", "touch-tracking.js",
 		`id="keyboard"`, `id="tracking"`, "booba.init()", "window.demoSetup(booba)")
 	mustNotContain(t, page, "app.wasm", "wasm_exec.js", "connectWasm()", "new Go()", `id="restart"`, "go run")

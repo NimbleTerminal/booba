@@ -10,7 +10,7 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/NimbleMarkets/go-booba/sip"
+	"nimbleterminal.dev/booba/sip"
 )
 
 // SE-9: unknown message types must be logged when Debug is enabled so

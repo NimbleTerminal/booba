@@ -3,16 +3,16 @@
 The terminal engine is ntwebterm, formerly NimbleMarkets' ghostty-web fork.
 
 <p>
-    <a href="https://nimblemarkets.github.io/go-booba/"><img src="https://img.shields.io/badge/Live%20Demos-E24F36" alt="Live Demos"></a>
-    <a href="https://github.com/NimbleMarkets/go-booba/blob/main/docs/markdown/booba.md"><img src="https://img.shields.io/badge/Command%20Ref-6B2DAD" alt="Command Reference"></a>
-    <a href="https://github.com/NimbleMarkets/go-booba/tags"><img src="https://img.shields.io/github/tag/NimbleMarkets/go-booba.svg" alt="Latest Release"></a>
-    <a href="https://pkg.go.dev/github.com/NimbleMarkets/go-booba?tab=doc"><img src="https://pkg.go.dev/badge/github.com/NimbleMarkets/go-booba?utm_source=godoc" alt="GoDoc"></a>
-    <a href="https://github.com/NimbleMarkets/go-booba/blob/main/CODE_OF_CONDUCT.md"><img src="https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg"  alt="Code Of Conduct"></a>
+    <a href="https://nimbleterminal.github.io/booba/"><img src="https://img.shields.io/badge/Live%20Demos-E24F36" alt="Live Demos"></a>
+    <a href="https://github.com/NimbleTerminal/booba/blob/main/docs/markdown/booba.md"><img src="https://img.shields.io/badge/Command%20Ref-6B2DAD" alt="Command Reference"></a>
+    <a href="https://github.com/NimbleTerminal/booba/tags"><img src="https://img.shields.io/github/tag/NimbleTerminal/booba.svg" alt="Latest Release"></a>
+    <a href="https://pkg.go.dev/nimbleterminal.dev/booba?tab=doc"><img src="https://pkg.go.dev/badge/nimbleterminal.dev/booba?utm_source=godoc" alt="GoDoc"></a>
+    <a href="https://github.com/NimbleTerminal/booba/blob/main/CODE_OF_CONDUCT.md"><img src="https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg"  alt="Code Of Conduct"></a>
 </p>
 
 `go-booba` is a Golang module that facilitates embedding [BubbleTea](https://github.com/charmbracelet/bubbletea) Terminal User Interfaces (TUIs) into a Web Browser, served over HTTP with a Ghostty-powered terminal frontend.
 
-See it running at the [live demos](https://nimblemarkets.github.io/go-booba/): Bubble Tea programs compiled to WebAssembly, including the experimental Terminal Actions bar.
+See it running at the [live demos](https://nimbleterminal.github.io/booba/): Bubble Tea programs compiled to WebAssembly, including the experimental Terminal Actions bar.
 
 <p>
   <table>
@@ -34,16 +34,32 @@ See it running at the [live demos](https://nimblemarkets.github.io/go-booba/): B
 
 ## Installation
 
+The vanity module lineage starts at v0.12.0 (publication pending). Earlier tags
+still declare the old module path. Historical release descriptions and assets
+remain at [NimbleMarkets/go-booba](https://github.com/NimbleMarkets/go-booba/releases).
+See [the migration checklist](docs/MIGRATION.md) for release readiness.
+
 **Go** (server-side library and CLI tools):
 
 ```sh
-go get github.com/NimbleMarkets/go-booba
+go mod edit -replace=charm.land/bubbletea/v2=github.com/neomantra/bubbletea/v2@v2.0.0-20261020122444-536722b0bdb6
+go get nimbleterminal.dev/booba@v0.12.0
 ```
 
-**npm** (TypeScript/JavaScript frontend):
+The Bubble Tea replacement must also be present in consumer modules; dependency
+replacements do not propagate. For CLI installation, clone this repository,
+check out the release tag, and run:
 
 ```sh
-npm install @nimblemarkets/booba
+go install ./cmd/booba ./cmd/booba-assets ./cmd/booba-sip-client
+```
+
+Version-suffixed `go install` rejects this replacement.
+
+**npm** (TypeScript/JavaScript frontend; publication pending):
+
+```sh
+npm install @nimbleterminal/booba --registry=https://npm.pkg.github.com
 ```
 
 ## How and What?
@@ -117,7 +133,7 @@ package main
 import (
     "log"
 
-    booba "github.com/NimbleMarkets/go-booba"
+    booba "nimbleterminal.dev/booba"
 )
 
 func main() {
@@ -158,17 +174,17 @@ GOOS=js GOARCH=wasm go build -o web/app.wasm ./cmd/myapp/
 The compiled `app.wasm` needs supporting files alongside it. The `booba-assets` tool scaffolds a complete `web/` directory — Go's `wasm_exec.js` runtime shim, the `booba/` terminal wrapper, the `ntwebterm/` emulator assets, and a starter `index.html`:
 
 ```sh
-go get -tool github.com/NimbleMarkets/go-booba/cmd/booba-assets@v0.8.0
+go get -tool nimbleterminal.dev/booba/cmd/booba-assets@v0.12.0
 go tool booba-assets web/
 GOOS=js GOARCH=wasm go build -o web/app.wasm ./cmd/myapp/
 ```
 
 Run these commands in your application's Go module, with the BubbleTea replacement above.
 The tool directive records the scaffolder as a project dependency; no booba source
-checkout is needed. `go run .../cmd/booba-assets@v0.8.0` and
-`go install .../cmd/booba-assets@v0.8.0` are rejected by Go because booba's
+checkout is needed. `go run .../cmd/booba-assets@v0.12.0` and
+`go install .../cmd/booba-assets@v0.12.0` are rejected by Go because booba's
 module contains a `replace` directive. You can also use the `booba-assets`
-binary from the [release archives](https://github.com/NimbleMarkets/go-booba/releases).
+binary from the [release archives](https://github.com/NimbleTerminal/booba/releases).
 The binary embeds its browser assets but still needs the Go toolchain used to
 build `app.wasm` to supply the matching `wasm_exec.js`.
 
@@ -270,7 +286,7 @@ Notes:
  * Basic Auth requires `--cert-file` and `--key-file`; the server refuses to start otherwise.
  * prefer `--password-file` or `$BOOBA_PASSWORD` over `--password`: the flag form leaks the secret into argv, shell history, and `ps` listings. Precedence is flag > file > env.
  * static frontend files are embedded with `go:embed`, so after frontend asset changes you must rebuild the Go binary you run.
- * reverse-proxy deployment: booba's `index.html` resolves every endpoint against `document.baseURI`, so hosting at a non-root path (e.g. nginx `location /terminal/`) works as long as the proxy **strips the prefix** before forwarding. For custom frontends, use the exported `resolveBoobaURLs(document.baseURI)` helper from `@nimblemarkets/booba`.
+ * reverse-proxy deployment: booba's `index.html` resolves every endpoint against `document.baseURI`, so hosting at a non-root path (e.g. nginx `location /terminal/`) works as long as the proxy **strips the prefix** before forwarding. For custom frontends, use the exported `resolveBoobaURLs(document.baseURI)` helper from `@nimbleterminal/booba`.
 
 ## `booba-sip-client`
 
@@ -295,8 +311,8 @@ WebTransport uses HTTP/3 over QUIC and offers lower head-of-line-blocking latenc
 
 We welcome contributions and feedback.  Please adhere to our [Code of Conduct](./CODE_OF_CONDUCT.md) when engaging our community.
 
- * [GitHub Issues](https://github.com/NimbleMarkets/go-booba/issues)
- * [GitHub Pull Requests](https://github.com/NimbleMarkets/go-booba/pulls)
+ * [GitHub Issues](https://github.com/NimbleTerminal/booba/issues)
+ * [GitHub Pull Requests](https://github.com/NimbleTerminal/booba/pulls)
 
 ## Acknowledgements
 

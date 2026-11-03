@@ -9,9 +9,9 @@ import (
 
 	"charm.land/bubbles/v2/key"
 	tea "charm.land/bubbletea/v2"
-	"github.com/NimbleMarkets/go-booba/actions"
-	"github.com/NimbleMarkets/go-booba/actions/bubblehelp"
-	"github.com/NimbleMarkets/go-booba/internal/actiontest"
+	"nimbleterminal.dev/booba/actions"
+	"nimbleterminal.dev/booba/actions/bubblehelp"
+	"nimbleterminal.dev/booba/internal/actiontest"
 	uv "github.com/charmbracelet/ultraviolet"
 )
 

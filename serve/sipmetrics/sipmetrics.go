@@ -18,7 +18,7 @@ import (
 
 	"github.com/prometheus/client_golang/prometheus"
 
-	"github.com/NimbleMarkets/go-booba/serve"
+	"nimbleterminal.dev/booba/serve"
 )
 
 type config struct {

@@ -8,7 +8,7 @@ import (
 	"regexp"
 	"testing"
 
-	assets "github.com/NimbleMarkets/go-booba/serve/static"
+	assets "nimbleterminal.dev/booba/serve/static"
 )
 
 func TestEmbeddedAssetsContainOnlyRuntimeFiles(t *testing.T) {

@@ -3,6 +3,7 @@
 # CGO-free release builds for go-booba CLI utilities.
 
 version: 2
+project_name: booba
 
 before:
   hooks:

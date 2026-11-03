@@ -4,7 +4,7 @@ import (
 	"strings"
 
 	"charm.land/lipgloss/v2"
-	"github.com/NimbleMarkets/go-booba/actions"
+	"nimbleterminal.dev/booba/actions"
 )
 
 // Styles colors the bar. Zero values take DefaultStyles.

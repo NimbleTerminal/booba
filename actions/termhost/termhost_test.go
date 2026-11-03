@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	tea "charm.land/bubbletea/v2"
-	"github.com/NimbleMarkets/go-booba/actions"
+	"nimbleterminal.dev/booba/actions"
 )
 
 // recorder is the wrapped application: it records messages and shows two lines.

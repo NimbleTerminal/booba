@@ -5,9 +5,9 @@ import (
 	"testing"
 
 	tea "charm.land/bubbletea/v2"
-	booba "github.com/NimbleMarkets/go-booba"
-	"github.com/NimbleMarkets/go-booba/actions/bubblehelp"
-	"github.com/NimbleMarkets/go-booba/internal/actiontest"
+	booba "nimbleterminal.dev/booba"
+	"nimbleterminal.dev/booba/actions/bubblehelp"
+	"nimbleterminal.dev/booba/internal/actiontest"
 )
 
 type startupModel struct {

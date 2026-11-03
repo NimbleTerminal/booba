@@ -122,7 +122,7 @@ func TestDemoDerivedValues(t *testing.T) {
 	if got := d.RunCommand(); got != "go run ./cmd/booba-view-example" {
 		t.Errorf("RunCommand = %q", got)
 	}
-	if got := d.SourceURL(); got != "https://github.com/NimbleMarkets/go-booba/tree/main/cmd/booba-view-example" {
+	if got := d.SourceURL(); got != "https://github.com/NimbleTerminal/booba/tree/main/cmd/booba-view-example" {
 		t.Errorf("SourceURL = %q", got)
 	}
 }

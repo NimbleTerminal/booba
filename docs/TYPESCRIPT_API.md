@@ -9,11 +9,11 @@ The `BoobaTerminal` class wraps ntwebterm's Terminal and provides a high-level A
 Install the package:
 
 ```sh
-npm install @nimblemarkets/booba
+npm install @nimbleterminal/booba
 ```
 
 ```javascript
-import { BoobaTerminal } from '@nimblemarkets/booba';
+import { BoobaTerminal } from '@nimbleterminal/booba';
 // or, if using the files directly from the server's embedded assets:
 // import { BoobaTerminal } from './booba/booba.js';
 
@@ -196,7 +196,7 @@ booba.rows        // Current row count
 Display active renderer backend and live FPS in a corner badge. Booba re-exports ntwebterm's renderer HUD for convenience.
 
 ```javascript
-import { BoobaTerminal, installRendererHud, parseRendererFromURL } from '@nimblemarkets/booba';
+import { BoobaTerminal, installRendererHud, parseRendererFromURL } from '@nimbleterminal/booba';
 
 const booba = new BoobaTerminal('container', {
   renderer: parseRendererFromURL(), // respects ?renderer= query param

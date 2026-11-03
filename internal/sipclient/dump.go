@@ -10,7 +10,7 @@ import (
 	"os"
 	"sync"
 
-	"github.com/NimbleMarkets/go-booba/sip"
+	"nimbleterminal.dev/booba/sip"
 )
 
 // DumpHandler implements FrameHandler by writing one JSON line per frame to

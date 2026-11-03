@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/NimbleMarkets/go-booba/actions"
+	"nimbleterminal.dev/booba/actions"
 )
 
 func testSnapshot() actions.Snapshot {

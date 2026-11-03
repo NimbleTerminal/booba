@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/NimbleMarkets/go-booba/serve"
+	"nimbleterminal.dev/booba/serve"
 	"github.com/spf13/cobra"
 )
 

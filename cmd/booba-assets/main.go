@@ -31,7 +31,7 @@ import (
 
 	"github.com/spf13/pflag"
 
-	"github.com/NimbleMarkets/go-booba/serve/static"
+	"nimbleterminal.dev/booba/serve/static"
 )
 
 //go:embed template/index.html
