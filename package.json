@@ -1,6 +1,6 @@
 {
   "name": "@nimbleterminal/booba",
-  "version": "0.12.0",
+  "version": "0.12.1",
   "type": "module",
   "description": "Terminal wrapper for BubbleTea programs using ntwebterm",
   "main": "dist/booba.js",
