@@ -1,0 +1,30 @@
+<!-- Manual release harness: copy beside the generated site index.html.
+Uses the generated _assets; never included in the public demo site. -->
+<!doctype html><html lang="en"><meta charset="utf-8"><title>Booba local release checks</title>
+<style>body{background:#eee;color:#111;font:16px system-ui;margin:20px}button,a{margin:5px;padding:8px}#terminal{width:900px;height:350px;background:#111}pre{white-space:pre-wrap}textarea{width:600px;height:45px}</style>
+<h1>Booba local release checks</h1>
+<p><a href="?renderer=canvas2d">Canvas2D</a><a href="?renderer=webgl">WebGL</a><a href="?renderer=webgpu">WebGPU</a></p>
+<button id="sample">Text and Kitty image</button><button id="narrow">Narrow terminal</button><button id="wide">Wide terminal</button>
+<button id="history">Fill scrollback</button><button id="top">Scroll to top</button><button id="bottom">Scroll to bottom</button><button id="paste">Paste API</button>
+<div id="terminal"></div><pre id="status">Starting</pre><pre id="input">No input yet</pre><pre id="errors">No errors</pre>
+<script type="module">
+import {BoobaTerminal,installRendererHud,parseRendererFromURL} from './_assets/booba/booba.js';
+const errors=document.querySelector('#errors');
+window.addEventListener('error',e=>errors.textContent=String(e.error));
+window.addEventListener('unhandledrejection',e=>errors.textContent=String(e.reason));
+const b=new BoobaTerminal('terminal',{renderer:parseRendererFromURL(),scrollback:300,fontSize:16});
+await b.init();installRendererHud(b.term);
+let received=[];
+b.term.onData(data=>{received.push(data);document.querySelector('#input').textContent='Input: '+JSON.stringify(received)});
+function status(){document.querySelector('#status').textContent=JSON.stringify({cols:b.term.cols,rows:b.term.rows,viewport:b.getViewportY(),bracketedPaste:b.hasBracketedPaste()},null,2)}
+b.term.onResize(status); b.term.onScroll(status);
+function sample(){b.reset();b.write('\x1b[?2004h\x1b[1;32mGREEN bold\x1b[0m  red: \x1b[31mRED\x1b[0m\r\nBox: ┌─────┐  Wide: 日本語  Emoji: 😀\r\n     └─────┘\r\nKitty image: red/green above blue/white\r\n');
+const pixels=new Uint8Array(32*32*4);for(let y=0;y<32;y++)for(let x=0;x<32;x++){let rgb=y<16?(x<16?[255,0,0]:[0,255,0]):(x<16?[0,0,255]:[255,255,255]);pixels.set([...rgb,255],(y*32+x)*4)}
+b.write('\x1b_Ga=T,f=32,s=32,v=32,i=77,c=8,r=4,q=2;'+btoa(String.fromCharCode(...pixels))+'\x1b\\');status();}
+document.querySelector('#sample').onclick=sample;
+for(const [id,width] of [['narrow',480],['wide',900]])document.getElementById(id).onclick=()=>{document.querySelector('#terminal').style.width=width+'px';b.fitAddon.fit();status()};
+document.querySelector('#history').onclick=()=>{b.reset();b.write(Array.from({length:120},(_,i)=>'ROW '+String(i).padStart(3,'0')).join('\r\n')+'\r\n');status()};
+document.querySelector('#top').onclick=()=>{b.scrollToTop();status()};document.querySelector('#bottom').onclick=()=>{b.scrollToBottom();status()};
+document.querySelector('#paste').onclick=()=>{received=[];b.write('\x1b[?2004h');b.paste('paste one\npaste two');status()};
+sample();
+</script></html>
