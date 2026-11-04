@@ -4,6 +4,10 @@
 
 ### Changed
 
+- Package the pinned ntwebterm runtime, declarations, WASM, and license notices
+  with the JavaScript distribution. Consumers no longer need a local ntwebterm
+  package. Add opt-in GitHub Packages publication; defer npmjs.com distribution.
+
 - Refresh ntwebterm to v0.4.1, built commit `fa8b2ae` from source `f65a610`.
   Includes upstream input/paste, lifecycle, scrollback, and renderer fixes.
 - Extend the `static/ghostty-web/` compatibility paths through 0.12 while

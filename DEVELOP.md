@@ -43,7 +43,7 @@ The submodule is pinned to the `built` branch, which ships the prebuilt `dist/` 
 
 The embedded `serve/static/booba/*.js` and `serve/static/ntwebterm/*` files are committed so Go builds need no JS toolchain. They're refreshed by bumping the `third_party/ntwebterm` submodule pointer to a new `built` tip and re-running `task build-serve-assets` locally before committing.
 
-The `serve/static` package (`serve/static/embed.go`) `go:embed`s these same files, so both the `serve` package and the `booba-assets` scaffolding tool ship them inside their binaries. Explicit `*.js` and `*.wasm` patterns include underscore-prefixed Vite chunks while excluding CJS bundles, declarations, and maps left over from older builds. The embed build emits JavaScript only; `npm run build` still emits declarations and source maps into `dist/` for npm consumers.
+The `serve/static` package (`serve/static/embed.go`) `go:embed`s these same files, so both the `serve` package and the `booba-assets` scaffolding tool ship them inside their binaries. Explicit `*.js` and `*.wasm` patterns include underscore-prefixed Vite chunks while excluding CJS bundles, declarations, and maps left over from older builds. The embed build emits JavaScript only; `npm run build` emits declarations and a self-contained ntwebterm distribution into `dist/` for npm consumers. Source maps are omitted because the packaging step rewrites imports. See [npm packaging and publication](docs/NPM.md).
 
 ### Updating ntwebterm
 

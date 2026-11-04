@@ -56,11 +56,17 @@ go install ./cmd/booba ./cmd/booba-assets ./cmd/booba-sip-client
 
 Version-suffixed `go install` rejects this replacement.
 
-**npm** (TypeScript/JavaScript frontend; publication pending):
+**GitHub Packages** (TypeScript/JavaScript frontend; publication pending):
+
+First configure [scope routing and authentication](docs/NPM.md#installing-from-github-packages).
 
 ```sh
-npm install @nimbleterminal/booba --registry=https://npm.pkg.github.com
+npm install @nimbleterminal/booba@0.12.0
 ```
+
+The package includes ntwebterm and its WASM. npmjs.com distribution is deferred.
+See [npm distribution](docs/NPM.md) for registry setup and
+Go/TinyGo runtime responsibilities.
 
 ## How and What?
 

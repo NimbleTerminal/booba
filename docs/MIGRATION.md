@@ -44,10 +44,12 @@ Infrastructure files were left untouched; no new plan or deployment was needed.
    The built commit's parent is the source; only generated distribution files
    were added. [Artifact CI run](https://github.com/NimbleTerminal/ntwebterm/actions/runs/41725357818)
    completed successfully for that source. The `static/ghostty-web/` alias remains.
-2. Fix npm distribution: the local devDependency `file:third_party/ntwebterm`
-   cannot satisfy emitted bare imports in consumer projects. Inspect JS and
-   declarations, provide portable runtime/types/WASM, pack, and test a fresh
-   consumer. ntwebterm registry availability has not been established.
+2. npm distribution implementation is complete locally: runtime and declarations
+   use vendored relative imports; licenses and standalone WASM are included.
+   `npm run test:package` passes outside the source checkout with strict
+   NodeNext/Bundler declarations and real WASM loading. GitHub Packages remains
+   unpublished; package access setup is pending. npmjs.com is deferred.
+   See [NPM.md](NPM.md) for the exact publishing identities and switches.
 3. Run full `task test`, `task build`, `task build-npm`, snapshot release,
    asset reproducibility, generated-site and interactive browser checks.
 4. Before importing ANY historical tags, disable Actions on the destination.
@@ -57,9 +59,9 @@ Infrastructure files were left untouched; no new plan or deployment was needed.
 5. Configure branch protection, Actions permissions, Pages (`/booba`), package
    access, and signing/notarization secrets without exposing values.
    `RELEASE_ENABLED=true` opts into binary releases;
-   `GITHUB_PACKAGES_ENABLED=true` separately opts into GitHub Packages publishing.
-   Leave both unset until their prerequisites pass. npmjs.com is a separate,
-   currently unconfigured target; do not enable it implicitly.
+   `GH_PACKAGES_ENABLED=true` separately opts into GitHub Packages publishing.
+   Leave both unset until their prerequisites pass. npmjs.com publication is
+   deferred and does not block this release.
 6. The user pushes the prepared branch. Require successful CI, then verify the
    pushed commit from a temporary module with GOWORK=off and no Booba replacement.
    Consumers must explicitly include the pinned Bubble Tea replacement in go.mod.
@@ -95,3 +97,13 @@ runtime file matches the pinned distribution. `git diff --check` passed.
 The lockfile records the installed local ntwebterm package as 0.4.1.
 Interactive browser rendering, paste, resize, scrollback, and renderer checks
 remain part of the release validation gate; unit tests do not establish those.
+
+## npm packaging checkpoint validation
+
+Passed after a clean `npm ci`: `npm run test:package`, `npm test` (24 files,
+163 tests), `actionlint`, and `git diff --check`. The fresh consumer installs
+only Booba and its WebGPU declaration dependency, then checks strict NodeNext
+and Bundler declarations, JavaScript imports, default inline WASM loading and
+exported standalone WASM parsing. No registry publication was attempted.
+Browser rendering and remote CI remain pending. See NPM.md for the separate
+Go/TinyGo runtime-shim boundary and publication setup.

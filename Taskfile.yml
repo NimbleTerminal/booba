@@ -119,17 +119,10 @@ tasks:
       - serve/static/booba/*.js
 
   build-npm:
-    desc: 'Build npm package to dist/'
+    desc: 'Build self-contained npm package to dist/'
     deps: [npm-deps]
     cmds:
       - npm run build
-    sources:
-      - package.json
-      - tsconfig.json
-      - third_party/ntwebterm/dist/ntwebterm.d.ts
-      - ts/*.ts
-    generates:
-      - dist/*.js
 
   init-submodules:
     desc: 'Initialize git submodules (third_party/ntwebterm on built ships prebuilt dist/)'

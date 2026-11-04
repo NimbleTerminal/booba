@@ -68,8 +68,10 @@ These are copies of the browser runtime files in `third_party/ntwebterm/dist/` f
 `scripts/copy-ntwebterm-assets.mjs` copies only `.js` and `.wasm` files and
 prunes obsolete copies. The UMD/CJS bundle, declarations, and source maps are
 not embedded. TypeScript resolves upstream declarations through the installed
-ntwebterm npm package; `npm run build` still emits booba's own declarations
-and source maps into `dist/` for npm consumers.
+ntwebterm development package. `npm run build` emits booba's declarations and
+packages the pinned runtime and declarations under `dist/ntwebterm/`, rewriting
+self-contained imports. Source maps are omitted because imports are rewritten.
+Run `npm run test:package` to validate the tarball in an isolated consumer.
 
 To update: bump the submodule pointer (after triggering the fork's
 `build-artifacts` workflow if the latest source isn't yet built —

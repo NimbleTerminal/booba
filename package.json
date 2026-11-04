@@ -8,21 +8,25 @@
   "types": "dist/booba.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/booba.js",
-      "types": "./dist/booba.d.ts"
-    }
+      "types": "./dist/booba.d.ts",
+      "import": "./dist/booba.js"
+    },
+    "./ghostty-vt.wasm": "./dist/ntwebterm/ghostty-vt.wasm"
   },
   "files": [
     "dist"
   ],
   "scripts": {
-    "build": "tsc",
+    "build": "node scripts/build-npm.mjs",
     "build:embed": "tsc -p tsconfig.embed.json && sed -i.bak -e \"s|from 'ntwebterm'|from '../ntwebterm/ntwebterm.js'|\" serve/static/booba/booba.js && rm serve/static/booba/booba.js.bak",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "prepack": "npm run build",
+    "test:package": "node scripts/test-npm-package.mjs"
   },
   "publishConfig": {
-    "registry": "https://npm.pkg.github.com"
+    "registry": "https://npm.pkg.github.com",
+    "access": "public"
   },
   "repository": {
     "type": "git",
@@ -30,9 +34,12 @@
   },
   "license": "MIT",
   "devDependencies": {
-    "ntwebterm": "file:third_party/ntwebterm",
     "happy-dom": "^20.14.5",
+    "ntwebterm": "file:third_party/ntwebterm",
     "typescript": "^5.9.3",
     "vitest": "^4.1.11"
+  },
+  "dependencies": {
+    "@webgpu/types": "^0.1.74"
   }
 }
