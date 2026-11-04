@@ -29,7 +29,7 @@ func TestRenderProducesAllPages(t *testing.T) {
 		"Multiple views", "Touch controls",
 		`href="/booba/demos/views/"`, `href="/booba/style.css"`,
 		"Press <kbd>Enter</kbd>",
-		"Serving a program", "github.com/NimbleMarkets/go-booba-example")
+		"Serving a program", "github.com/NimbleTerminal/booba-example")
 
 	views := filepath.Join(out, "demos", "views", "index.html")
 	mustContain(t, views,
