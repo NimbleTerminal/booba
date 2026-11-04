@@ -5,7 +5,7 @@ Wrap a local CLI command and serve it through a browser terminal
 ### Synopsis
 
 booba wraps any local CLI program and serves it in the browser
-through the same embedded Ghostty terminal stack that the go-booba library
+through the same embedded Ghostty terminal stack that the Booba library
 uses. Everything after -- is treated as the wrapped command and its
 arguments.
 

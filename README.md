@@ -1,6 +1,4 @@
-# go-booba - Web-based BubbleTea TUIs using libghostty
-
-The terminal engine is ntwebterm, formerly NimbleMarkets' ghostty-web fork.
+# Booba - Bubble Tea in the browser powered by Ghostty
 
 <p>
     <a href="https://nimbleterminal.github.io/booba/"><img src="https://img.shields.io/badge/Live%20Demos-E24F36" alt="Live Demos"></a>
@@ -10,7 +8,9 @@ The terminal engine is ntwebterm, formerly NimbleMarkets' ghostty-web fork.
     <a href="https://github.com/NimbleTerminal/booba/blob/main/CODE_OF_CONDUCT.md"><img src="https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg"  alt="Code Of Conduct"></a>
 </p>
 
-`go-booba` is a Golang module that facilitates embedding [BubbleTea](https://github.com/charmbracelet/bubbletea) Terminal User Interfaces (TUIs) into a Web Browser, served over HTTP with a Ghostty-powered terminal frontend.
+Booba brings [Bubble Tea](https://github.com/charmbracelet/bubbletea) terminal UIs
+to the browser. It provides a Go library, CLI tools, and a TypeScript frontend
+powered by [ntwebterm](https://github.com/NimbleTerminal/ntwebterm) and libghostty.
 
 See it running at the [live demos](https://nimbleterminal.github.io/booba/): Bubble Tea programs compiled to WebAssembly, including the experimental Terminal Actions bar.
 
@@ -29,8 +29,6 @@ See it running at the [live demos](https://nimbleterminal.github.io/booba/): Bub
     </tr>
   </table>
 </p>
-
-
 
 ## Installation
 
@@ -68,12 +66,10 @@ The package includes ntwebterm and its WASM. npmjs.com distribution is deferred.
 See [npm distribution](docs/NPM.md) for registry setup and
 Go/TinyGo runtime responsibilities.
 
-## How and What?
-
-The primary enabling technologies of this are:
+## Built with
 
  * [`libghostty`](https://github.com/ghostty-org/ghostty) - Terminal emulation engine
- * [`ntwebterm`](https://github.com/coder/ghostty-web) - Web-based terminal using Ghostty's VT100 parser via WebAssembly
+ * [`ntwebterm`](https://github.com/NimbleTerminal/ntwebterm) - Web-based terminal using Ghostty's VT100 parser via WebAssembly
  * [`BubbleTea`](https://github.com/charmbracelet/bubbletea) - Terminal UI framework for Go
  * [`WebAssembly`](https://webassembly.org) - For running Go code in browsers
  * [`WebTransport`](https://developer.mozilla.org/en-US/docs/Web/API/WebTransport_API) - HTTP/3-based low-latency browser transport (with WebSocket fallback)
@@ -206,7 +202,7 @@ and its dependencies still needs validation. See [compiler compatibility](docs/N
 
 For a custom host page, use `go tool booba-assets --no-index web/` to skip the starter page entirely (including the existing-page notice). `--no-index` takes precedence over `--force`.
 
-Serve the resulting `web/` directory with any static file server. `booba-assets` leaves an existing `index.html` untouched unless you pass `--force`, so re-running it after a go-booba upgrade safely refreshes the asset files while preserving your host page.
+Serve the resulting `web/` directory with any static file server. `booba-assets` leaves an existing `index.html` untouched unless you pass `--force`, so re-running it after a Booba upgrade safely refreshes the asset files while preserving your host page.
 
 For finer control, the [`wasm`](./wasm) subpackage exposes the browser bridge directly, and native code can construct a `tea.Program` the usual way.
 
@@ -306,7 +302,7 @@ Notes:
 
 ## `booba-sip-client`
 
-The `booba-sip-client` command connects to a running `booba` server and provides an interactive terminal session or dump-frames mode for diagnostics. The name comes from [sip](https://github.com/Gaurav-Gosain/sip), a tool by [@Gaurav-Gosain](https://github.com/Gaurav-Gosain) that pioneered a similar wire protocol; `go-booba` adopted and extended that protocol.
+The `booba-sip-client` command connects to a running `booba` server and provides an interactive terminal session or dump-frames mode for diagnostics. The name comes from [sip](https://github.com/Gaurav-Gosain/sip), a tool by [@Gaurav-Gosain](https://github.com/Gaurav-Gosain) that pioneered a similar wire protocol; Booba adopted and extended that protocol.
 
 Build and run it:
 
@@ -332,7 +328,10 @@ We welcome contributions and feedback.  Please adhere to our [Code of Conduct](.
 
 ## Acknowledgements
 
-Thanks to the [Ghostty developers](https://github.com/ghostty-org/ghostty), the [ntwebterm](https://github.com/coder/ghostty-web) developers, and to [Charm.sh](https://charm.sh) for making the command line glamorous with [Bubble Tea](https://github.com/charmbracelet/bubbletea).
+Thanks to the [Ghostty developers](https://github.com/ghostty-org/ghostty), the [ntwebterm](https://github.com/NimbleTerminal/ntwebterm) and
+[ghostty-web](https://github.com/coder/ghostty-web) developers, and to [Charm.sh](https://charm.sh) for making the command line glamorous with [Bubble Tea](https://github.com/charmbracelet/bubbletea).
+
+ntwebterm grew from NimbleMarkets' ghostty-web fork, based on Coder's browser terminal.
 
 Thanks to [@BigJK](https://github.com/BigJk/bubbletea-in-wasm) for the initial inspiration when I was exploring this before `libghostty`.
 

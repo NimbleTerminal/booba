@@ -1,12 +1,10 @@
 # `BoobaTerminal` TypeScript API
 
-The terminal engine is ntwebterm, formerly NimbleMarkets' ghostty-web fork.
+The `BoobaTerminal` class wraps ntwebterm's Terminal and provides a high-level API for embedding BubbleTea programs in a web page.
 
 Publication of v0.12.0 is pending. The npm package includes the pinned ntwebterm
 runtime, declarations, and WASM; consumers do not install ntwebterm separately.
 See [package distribution and compiler compatibility](NPM.md).
-
-The `BoobaTerminal` class wraps ntwebterm's Terminal and provides a high-level API for embedding BubbleTea programs in a web page.
 
 ## Quick Start
 

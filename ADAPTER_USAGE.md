@@ -1,7 +1,5 @@
 # Booba Adapter Usage Guide
 
-The terminal engine is ntwebterm, formerly NimbleMarkets' ghostty-web fork.
-
 The BubbleTea adapter abstraction allows you to connect to Booba-based BubbleTea programs in multiple ways. For the full `BoobaTerminal` API reference, see [docs/TYPESCRIPT_API.md](./docs/TYPESCRIPT_API.md).
 
 ## Touch gestures
@@ -113,7 +111,7 @@ go run nimbleterminal.dev/booba/cmd/booba-assets web/
 GOOS=js GOARCH=wasm go build -o web/app.wasm ./cmd/myapp/
 ```
 
-This produces a `web/` directory ready to serve with any static file server. The generated `index.html` is a starter template — it is left untouched on re-runs unless you pass `--force`, so your customizations survive. Re-run `booba-assets` (without `--force`) after upgrading the go-booba dependency to refresh `wasm_exec.js`, `booba/`, and `ntwebterm/`.
+This produces a `web/` directory ready to serve with any static file server. The generated `index.html` is a starter template — it is left untouched on re-runs unless you pass `--force`, so your customizations survive. Re-run `booba-assets` (without `--force`) after upgrading the Booba dependency to refresh `wasm_exec.js`, `booba/`, and `ntwebterm/`.
 
 For advanced use cases that need direct control over the JS bridge (custom `js.FuncOf` callbacks, manual buffer management, etc.), the [`wasm`](./wasm) subpackage exposes the low-level API.
 

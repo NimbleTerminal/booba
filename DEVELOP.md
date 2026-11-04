@@ -31,7 +31,7 @@ installed golangci-lint binary to panic while analyzing the standard library.
 The hook also uses that toolchain's `gofmt`. Go downloads the selected toolchain
 automatically if it is not already installed.
 
-booba vendors [`ntwebterm`](https://github.com/NimbleTerminal/ntwebterm) (NimbleMarkets fork) as a git submodule at `third_party/ntwebterm`. Clone with submodules:
+Booba vendors [`ntwebterm`](https://github.com/NimbleTerminal/ntwebterm) as a git submodule at `third_party/ntwebterm`. Clone with submodules:
 
 ```sh
 git clone --recurse-submodules https://github.com/NimbleTerminal/booba.git

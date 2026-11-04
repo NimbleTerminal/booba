@@ -119,7 +119,7 @@ App-level auth/authz typically lives here (not at layer 1) because it needs `Ses
 > - **net/http middleware ecosystem reuse** via a transport-neutral handshake hook that works on both WebSocket and WebTransport (layer 1)
 > - **VT/Sip-aware protocol middleware** for clipboard, paste, resize, and observability concerns that only exist when a terminal is on the other end of a browser connection (layer 2)
 
-Layer 2 is the one no other ecosystem has. It is what justifies go-booba as more than "sip with WASM embedding".
+Layer 2 is the one no other ecosystem has. It is what justifies Booba as more than "sip with WASM embedding".
 
 ## Open questions
 
