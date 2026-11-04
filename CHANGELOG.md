@@ -7,6 +7,8 @@
 - Refresh ntwebterm to v0.4.2, built commit `279688c` from source `0e33f47`.
   Adds contextual shaping for Arabic and other joining scripts across Canvas2D,
   WebGL, and WebGPU. Keep the `static/ghostty-web/` compatibility assets.
+- Update Go dependencies, the JavaScript test toolchain, and GitHub Actions.
+  Use Node 24 consistently and golangci-lint v2.15.0.
 
 ## [0.12.0] - 2026-11-04
 

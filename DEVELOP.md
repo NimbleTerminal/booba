@@ -48,7 +48,7 @@ The `serve/static` package (`serve/static/embed.go`) `go:embed`s these same file
 ### Local CI preflight
 
 Run `task ci` before pushing. Install Go, Node/npm (CI uses Node 24), Task,
-golangci-lint v2.10.1, actionlint, and GoReleaser v2 first. The task uses the Go
+golangci-lint v2.15.0, actionlint, and GoReleaser v2 first. The task uses the Go
 version from go.mod and `GOWORK=off`, following the portable CI tasks in the other
 NimbleTerminal modules. The existing Bubble Tea replacement remains in effect.
 
@@ -215,3 +215,16 @@ from accessing a file descriptor concurrently with `os.File.Close`.
 Do not replace graceful quit with `Program.Kill` or context-forced program
 shutdown: Bubble Tea's forced path can skip joining its input reader. Model
 factories may decline a session by closing it before returning.
+
+## Dependency refresh notes
+
+The November 2026 refresh uses ntwebterm v0.4.2, Vitest 5, Happy DOM 21,
+and golangci-lint v2.15.0. TypeScript remains at 5.9.3: TypeScript 7.0.2's
+built-in WebGPU declarations conflict with the packaged `@webgpu/types`
+reference during strict consumer checks. Revisit that upgrade with a declaration
+strategy that also supports existing TypeScript consumers; do not hide the
+conflict with `skipLibCheck` in the package test.
+
+quic-go remains at v0.64.1 because webtransport-go v0.13.0 does not compile
+against v0.65.0's changed `HTTPStream` return signature. Upgrade those modules
+together once a compatible WebTransport release is available.

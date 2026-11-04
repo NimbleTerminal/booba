@@ -34,10 +34,10 @@
   },
   "license": "MIT",
   "devDependencies": {
-    "happy-dom": "^20.14.5",
+    "happy-dom": "^21.0.4",
     "ntwebterm": "file:third_party/ntwebterm",
     "typescript": "^5.9.3",
-    "vitest": "^4.1.11"
+    "vitest": "^5.1.0"
   },
   "dependencies": {
     "@webgpu/types": "^0.1.74"
