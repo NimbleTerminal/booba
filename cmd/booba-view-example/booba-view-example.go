@@ -20,10 +20,10 @@ import (
 
 	tea "charm.land/bubbletea/v2"
 	"charm.land/lipgloss/v2"
-	booba "nimbleterminal.dev/booba"
 	"github.com/fogleman/ease"
 	"github.com/lucasb-eyer/go-colorful"
 	"github.com/spf13/pflag"
+	booba "nimbleterminal.dev/booba"
 )
 
 const (

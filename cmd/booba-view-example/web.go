@@ -7,9 +7,9 @@ import (
 	"log"
 
 	tea "charm.land/bubbletea/v2"
+	"github.com/spf13/pflag"
 	"nimbleterminal.dev/booba/internal/cli"
 	"nimbleterminal.dev/booba/serve"
-	"github.com/spf13/pflag"
 )
 
 var serveOpts cli.ServeOptions

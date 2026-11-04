@@ -8,8 +8,8 @@ import (
 
 	"charm.land/bubbles/v2/help"
 	"charm.land/bubbles/v2/key"
-	"nimbleterminal.dev/booba/actions"
 	"github.com/charmbracelet/x/ansi"
+	"nimbleterminal.dev/booba/actions"
 )
 
 // Options allows application identity and presentation to supplement help data.

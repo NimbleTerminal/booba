@@ -45,6 +45,32 @@ The embedded `serve/static/booba/*.js` and `serve/static/ntwebterm/*` files are 
 
 The `serve/static` package (`serve/static/embed.go`) `go:embed`s these same files, so both the `serve` package and the `booba-assets` scaffolding tool ship them inside their binaries. Explicit `*.js` and `*.wasm` patterns include underscore-prefixed Vite chunks while excluding CJS bundles, declarations, and maps left over from older builds. The embed build emits JavaScript only; `npm run build` emits declarations and a self-contained ntwebterm distribution into `dist/` for npm consumers. Source maps are omitted because the packaging step rewrites imports. See [npm packaging and publication](docs/NPM.md).
 
+### Local CI preflight
+
+Run `task ci` before pushing. Install Go, Node/npm (CI uses Node 24), Task,
+golangci-lint v2.10.1, actionlint, and GoReleaser v2 first. The task uses the Go
+version from go.mod and `GOWORK=off`, following the portable CI tasks in the other
+NimbleTerminal modules. The existing Bubble Tea replacement remains in effect.
+
+Preflight checks formatting, module tidiness and downloaded modules, regenerates
+embedded assets, runs native/WASM Go and TypeScript tests, vet and lint, builds
+Go packages and the WASM demo site, validates the packed JavaScript consumer,
+lints workflows, checks GoReleaser configuration, and checks whitespace. Terminal
+identity variables are unset for tests so the WASM environment defaults are
+independent of the terminal running Task.
+
+Asset generation bypasses Task timestamps and checks all three embedded runtime
+directories, including the ghostty-web compatibility alias, against HEAD. Commit
+intentional generated-asset changes before expecting this check to pass. It keeps
+an initialized submodule checkout intact. Module tidiness uses `go mod tidy -diff`
+and does not rewrite go.mod/go.sum.
+
+The task may install npm dependencies, regenerates embedded assets and `web/`, and
+replaces `dist/` during the package test. For cross-platform release archives, run
+`task release:snapshot` afterward; it also replaces `dist/`. Neither command
+publishes. Browser interaction, signing credentials, remote CI, and registry access
+still need their release checks.
+
 ### Updating ntwebterm
 
 ```sh

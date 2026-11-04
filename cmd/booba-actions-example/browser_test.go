@@ -13,9 +13,9 @@ import (
 	"testing"
 	"time"
 
+	"github.com/coder/websocket"
 	"nimbleterminal.dev/booba/actions"
 	"nimbleterminal.dev/booba/sip"
-	"github.com/coder/websocket"
 )
 
 func TestBrowserDemo(t *testing.T) {

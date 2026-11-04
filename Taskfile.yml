@@ -17,6 +17,74 @@ tasks:
     cmds:
       - task --list-all
 
+  ci:
+    desc: 'Run local preflight against pinned dependencies (no publishing)'
+    env:
+      GOWORK: 'off'
+      GOTOOLCHAIN:
+        sh: "awk '$1 == \"go\" { print \"go\" $2; exit }' go.mod"
+    preconditions:
+      - sh: command -v golangci-lint
+        msg: 'Install golangci-lint v2.10.1 (see task dev-deps)'
+      - sh: command -v actionlint
+        msg: 'Install actionlint before running task ci'
+      - sh: command -v goreleaser
+        msg: 'Install GoReleaser v2 before running task ci'
+    # Subprocesses carry GOWORK/GOTOOLCHAIN into every child task.
+    # Keep stages sequential: tests/builds consume regenerated assets.
+    cmds:
+      - task fmt-check go-tidy-check go-verify
+      - task assets-check
+      - env -u TERM_PROGRAM -u COLORTERM task test
+      - task vet go-lint
+      - go build ./...
+      - task site
+      - npm run test:package
+      - actionlint
+      - task release:check
+      - git --no-pager diff --check HEAD
+
+  fmt-check:
+    desc: 'Check Go formatting without changing files'
+    cmds:
+      - |
+        project_goroot=$(go env GOROOT)
+        fmt_files=$("$project_goroot/bin/gofmt" -l .)
+        if [ -n "$fmt_files" ]; then
+          printf '%s\n' "$fmt_files"
+          exit 1
+        fi
+
+  go-tidy-check:
+    desc: 'Check module tidiness without changing go.mod or go.sum'
+    cmds:
+      - go mod tidy -diff
+
+  go-verify:
+    desc: 'Verify downloaded Go modules'
+    cmds:
+      - go mod verify
+
+  vet:
+    desc: 'Run Go static checks'
+    cmds:
+      - go vet ./...
+
+  assets-check:
+    desc: 'Regenerate embedded assets and check they match HEAD'
+    deps: [npm-deps]
+    cmds:
+      # Direct commands bypass Task timestamps without forcing a submodule reset.
+      - npm run build:embed
+      - node scripts/copy-ntwebterm-assets.mjs
+      - |
+        changes=$(git status --porcelain --untracked-files=all -- serve/static/booba serve/static/ntwebterm serve/static/ghostty-web)
+        if [ -n "$changes" ]; then
+          printf '%s\n' "$changes"
+          echo 'Embedded assets differ from HEAD; review and commit regenerated assets.' >&2
+          exit 1
+        fi
+
   dev-deps:
     desc: 'Install developer dependencies'
     cmds:

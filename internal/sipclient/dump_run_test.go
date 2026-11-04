@@ -12,8 +12,8 @@ import (
 	"testing"
 	"time"
 
-	"nimbleterminal.dev/booba/sip"
 	"github.com/coder/websocket"
+	"nimbleterminal.dev/booba/sip"
 )
 
 // fakeServer is a minimal /ws endpoint that sends one options frame, one

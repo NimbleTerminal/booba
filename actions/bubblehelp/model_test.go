@@ -6,8 +6,8 @@ import (
 
 	"charm.land/bubbles/v2/key"
 	tea "charm.land/bubbletea/v2"
-	"nimbleterminal.dev/booba/actions"
 	uv "github.com/charmbracelet/ultraviolet"
+	"nimbleterminal.dev/booba/actions"
 )
 
 func TestProgramStatusSupportReplies(t *testing.T) {

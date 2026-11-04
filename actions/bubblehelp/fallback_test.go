@@ -9,10 +9,10 @@ import (
 
 	"charm.land/bubbles/v2/key"
 	tea "charm.land/bubbletea/v2"
+	uv "github.com/charmbracelet/ultraviolet"
 	"nimbleterminal.dev/booba/actions"
 	"nimbleterminal.dev/booba/actions/bubblehelp"
 	"nimbleterminal.dev/booba/internal/actiontest"
-	uv "github.com/charmbracelet/ultraviolet"
 )
 
 type model struct{ updates int }

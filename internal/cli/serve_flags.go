@@ -8,8 +8,8 @@ import (
 	"strings"
 	"time"
 
-	"nimbleterminal.dev/booba/serve"
 	"github.com/spf13/pflag"
+	"nimbleterminal.dev/booba/serve"
 )
 
 // PasswordEnvVar is the environment variable consulted as a last-resort

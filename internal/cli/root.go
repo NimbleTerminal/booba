@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"nimbleterminal.dev/booba/serve"
 	"github.com/spf13/cobra"
+	"nimbleterminal.dev/booba/serve"
 )
 
 // rootServeOpts holds the flags bound to booba's root command.

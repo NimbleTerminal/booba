@@ -19,8 +19,8 @@ import (
 
 	tea "charm.land/bubbletea/v2"
 	"charm.land/lipgloss/v2"
-	"nimbleterminal.dev/booba"
 	"github.com/spf13/pflag"
+	"nimbleterminal.dev/booba"
 )
 
 // Note that an editor applying the BiDi algorithm displays the literals below

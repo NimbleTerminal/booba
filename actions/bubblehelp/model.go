@@ -10,8 +10,8 @@ import (
 
 	"charm.land/bubbles/v2/help"
 	tea "charm.land/bubbletea/v2"
-	"nimbleterminal.dev/booba/actions"
 	uv "github.com/charmbracelet/ultraviolet"
+	"nimbleterminal.dev/booba/actions"
 )
 
 // Description connects a model's current help map to human-readable status.
