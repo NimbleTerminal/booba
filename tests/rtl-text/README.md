@@ -9,8 +9,9 @@ both BiDi ordering and Arabic cursive joining across Hebrew, Arabic, and Persian
 **Update (2026-09-27):** booba now pins ntwebterm `c51504e` (source `10a023d`),
 which adds BiDi ordering across Canvas2D, WebGL, and WebGPU, with corresponding
 selection, link, and mouse-coordinate mapping. The findings below describe the
-previous `52ed6df` build. Keep this harness for visual regression checks; Arabic
-and Persian cursive shaping remains a separate limitation.
+previous `52ed6df` build. ntwebterm v0.4.2 (`279688c`, source `0e33f47`)
+adds contextual Arabic and Persian shaping across all three renderers. Keep this
+harness for visual regression checks of both ordering and joining.
 
 ## What it does
 

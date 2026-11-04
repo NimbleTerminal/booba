@@ -88,7 +88,7 @@ func TestBrowserOnlyDemoHasNoGoRuntime(t *testing.T) {
 	mustNotContain(t, colors, "app.wasm", "wasm_exec.js", "connectWasm()", "new Go()")
 	rtl := filepath.Join(out, "demos", "rtl", "index.html")
 	mustContain(t, rtl, "Right-to-left text", "Browser ordering", "Forced logical order",
-		"cursive shaping is a known limitation", "go run ./tests/rtl-text", "connectWasm()")
+		"contextual letter forms that join into cursive words", "go run ./tests/rtl-text", "connectWasm()")
 	mustContain(t, filepath.Join(out, "index.html"), "Built with booba",
 		"https://nimbleterminal.github.io/ntcanvas/?demo=grids",
 		"https://github.com/NimbleTerminal/ntmaps/tree/main/examples/explorer")
