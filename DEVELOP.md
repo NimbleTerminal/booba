@@ -93,7 +93,10 @@ Run these commands in the consumer module with the BubbleTea replacement above.
 Version-suffixed `go run` and `go install` commands are rejected because booba's
 module contains a `replace` directive. The tool directive uses the consumer's
 module configuration instead. Alternatively, use a release binary; its assets
-are embedded, but it still needs the matching Go toolchain for `wasm_exec.js`.
+are embedded, but it still needs the matching compiler shim for `wasm_exec.js`.
+Use `go tool booba-assets --toolchain tinygo web/` for TinyGo's shim, or
+`--wasm-exec /path/to/wasm_exec.js` for an explicit file. See
+[compiler compatibility](docs/NPM.md#go-and-tinygo-applications).
 
 See [ADAPTER_USAGE.md](./ADAPTER_USAGE.md) for the full WASM embedding workflow.
 

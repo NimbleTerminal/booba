@@ -2,7 +2,7 @@
 // a BubbleTea program compiled to WebAssembly.
 //
 // It writes:
-//   - wasm_exec.js  — copied from GOROOT (Go's WASM runtime shim)
+//   - wasm_exec.js  — copied from the selected Go or TinyGo toolchain
 //   - booba/*.js    — the terminal wrapper (embedded in this binary)
 //   - ntwebterm/* — the ntwebterm terminal emulator (embedded)
 //   - index.html    — a starter template (embedded), unless one exists
@@ -10,12 +10,12 @@
 // Every asset except wasm_exec.js is embedded at compile time via the
 // go-booba serve/static package, so the tool needs no module context,
 // network access, or particular working directory — it runs anywhere.
-// wasm_exec.js is copied from the active Go toolchain because it must
+// wasm_exec.js is copied from the selected toolchain because it must
 // match the compiler that builds the user's app.wasm.
 //
 // Usage:
 //
-//	booba-assets [--force] [--no-index] <output-dir>
+//	booba-assets [--toolchain go|tinygo] [--wasm-exec path] [--force] [--no-index] <output-dir>
 package main
 
 import (
@@ -37,11 +37,18 @@ import (
 //go:embed template/index.html
 var templateFS embed.FS
 
+type assetOptions struct {
+	force, noIndex      bool
+	toolchain, wasmExec string
+}
+
 func main() {
+	toolchain := pflag.String("toolchain", "go", "compiler supplying wasm_exec.js: go or tinygo")
+	wasmExec := pflag.String("wasm-exec", "", "copy this wasm_exec.js instead of querying the toolchain")
 	noIndex := pflag.Bool("no-index", false, "skip the starter index.html (even with --force)")
 	force := pflag.BoolP("force", "f", false, "overwrite an existing index.html")
 	pflag.Usage = func() {
-		fmt.Fprintf(os.Stderr, "Usage: %s [--force] [--no-index] <output-dir>\n\n", os.Args[0])
+		fmt.Fprintf(os.Stderr, "Usage: %s [--toolchain go|tinygo] [--wasm-exec path] [--force] [--no-index] <output-dir>\n\n", os.Args[0])
 		fmt.Fprintln(os.Stderr, "Populates <output-dir> with wasm_exec.js, booba/, ntwebterm/,")
 		fmt.Fprintln(os.Stderr, "and a starter index.html for hosting a BubbleTea WASM program.")
 		pflag.PrintDefaults()
@@ -52,22 +59,31 @@ func main() {
 		pflag.Usage()
 		os.Exit(2)
 	}
-	if err := run(pflag.Arg(0), *force, *noIndex); err != nil {
+	if err := run(pflag.Arg(0), assetOptions{force: *force, noIndex: *noIndex, toolchain: *toolchain, wasmExec: *wasmExec}); err != nil {
 		fmt.Fprintf(os.Stderr, "booba-assets: %v\n", err)
 		os.Exit(1)
 	}
 }
 
-func run(outDir string, force, noIndex bool) error {
+func run(outDir string, opts assetOptions) error {
+	// Resolve and read the shim before touching the destination. A missing
+	// compiler or invalid override must not partially refresh existing assets.
+	src, err := wasmExecPath(opts.toolchain, opts.wasmExec, toolchainEnv)
+	if err != nil {
+		return err
+	}
+	data, err := os.ReadFile(src)
+	if err != nil {
+		return fmt.Errorf("read wasm_exec.js at %s: %w", src, err)
+	}
 	if err := os.MkdirAll(outDir, 0o755); err != nil {
 		return fmt.Errorf("create output dir: %w", err)
 	}
-
-	// wasm_exec.js — copied from the active Go toolchain so it matches
-	// the compiler that builds the user's app.wasm.
-	if err := copyWasmExec(outDir); err != nil {
-		return err
+	dst := filepath.Join(outDir, "wasm_exec.js")
+	if err := os.WriteFile(dst, data, 0o644); err != nil {
+		return fmt.Errorf("write wasm_exec.js: %w", err)
 	}
+	fmt.Printf("  wasm_exec.js          → %s (from %s)\n", dst, src)
 
 	// booba/*.js (terminal wrapper) — embedded
 	boobaDst := filepath.Join(outDir, "booba")
@@ -95,18 +111,18 @@ func run(outDir string, force, noIndex bool) error {
 	}
 	fmt.Printf("  ntwebterm/ (%d files) → %s\n", n, ghDst)
 
-	// Compatibility for 0.11; remove with the old import path in 0.12.
+	// Retain compatibility paths through the 0.12 namespace migration.
 	if _, err := copyEmbedded("ghostty-web", filepath.Join(outDir, "ghostty-web"), isBrowserAsset); err != nil {
 		return fmt.Errorf("write legacy terminal aliases: %w", err)
 	}
 
-	if noIndex {
+	if opts.noIndex {
 		return nil
 	}
 
 	// index.html (only if missing or --force)
 	htmlDst := filepath.Join(outDir, "index.html")
-	if _, err := os.Stat(htmlDst); err == nil && !force {
+	if _, err := os.Stat(htmlDst); err == nil && !opts.force {
 		fmt.Printf("  index.html exists, skipped (use --force to overwrite)\n")
 	} else {
 		html, err := templateFS.ReadFile("template/index.html")
@@ -122,25 +138,32 @@ func run(outDir string, force, noIndex bool) error {
 	return nil
 }
 
-// copyWasmExec copies wasm_exec.js from the active Go toolchain's GOROOT
-// into outDir. It must come from the toolchain (not an embedded copy) so
-// it matches the compiler that builds the user's app.wasm.
-func copyWasmExec(outDir string) error {
-	goroot, err := goEnv("GOROOT")
+// wasmExecPath selects the shim matching the compiler used for app.wasm.
+// An explicit file allows versioned/custom toolchains without changing PATH.
+func wasmExecPath(toolchain, override string, env func(string, string) (string, error)) (string, error) {
+	if toolchain == "" {
+		toolchain = "go"
+	}
+	var key, relative string
+	switch toolchain {
+	case "go":
+		key, relative = "GOROOT", filepath.Join("lib", "wasm", "wasm_exec.js")
+	case "tinygo":
+		key, relative = "TINYGOROOT", filepath.Join("targets", "wasm_exec.js")
+	default:
+		return "", fmt.Errorf("unknown toolchain %q: expected go or tinygo", toolchain)
+	}
+	if override != "" {
+		return override, nil
+	}
+	root, err := env(toolchain, key)
 	if err != nil {
-		return fmt.Errorf("locate GOROOT: %w", err)
+		return "", fmt.Errorf("locate %s using %s env %s (or specify --wasm-exec): %w", key, toolchain, key, err)
 	}
-	src := filepath.Join(goroot, "lib", "wasm", "wasm_exec.js")
-	data, err := os.ReadFile(src)
-	if err != nil {
-		return fmt.Errorf("read wasm_exec.js (expected at %s): %w", src, err)
+	if root == "" {
+		return "", fmt.Errorf("%s env %s returned an empty path", toolchain, key)
 	}
-	dst := filepath.Join(outDir, "wasm_exec.js")
-	if err := os.WriteFile(dst, data, 0o644); err != nil {
-		return fmt.Errorf("write wasm_exec.js: %w", err)
-	}
-	fmt.Printf("  wasm_exec.js          → %s\n", dst)
-	return nil
+	return filepath.Join(root, relative), nil
 }
 
 // copyEmbedded writes every file in the embedded directory subdir for
@@ -184,8 +207,8 @@ func isBrowserAsset(name string) bool {
 	return strings.HasSuffix(name, ".js") || strings.HasSuffix(name, ".wasm")
 }
 
-func goEnv(name string) (string, error) {
-	out, err := exec.Command("go", "env", name).Output()
+func toolchainEnv(toolchain, name string) (string, error) {
+	out, err := exec.Command(toolchain, "env", name).Output()
 	if err != nil {
 		return "", err
 	}

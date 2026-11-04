@@ -191,8 +191,18 @@ checkout is needed. `go run .../cmd/booba-assets@v0.12.0` and
 `go install .../cmd/booba-assets@v0.12.0` are rejected by Go because booba's
 module contains a `replace` directive. You can also use the `booba-assets`
 binary from the [release archives](https://github.com/NimbleTerminal/booba/releases).
-The binary embeds its browser assets but still needs the Go toolchain used to
-build `app.wasm` to supply the matching `wasm_exec.js`.
+The binary embeds its browser assets; the runtime shim must come from the compiler
+used to build `app.wasm`. Standard Go is the default. For TinyGo or a custom shim:
+
+```sh
+go tool booba-assets --toolchain tinygo web/
+go tool booba-assets --wasm-exec /path/to/matching/wasm_exec.js web/
+```
+
+`--toolchain tinygo` queries `tinygo env TINYGOROOT`; `--wasm-exec` copies the
+specified file without looking up a compiler. Use the same option each time you
+refresh assets. This selects the runtime shim; TinyGo compilation of your app
+and its dependencies still needs validation. See [compiler compatibility](docs/NPM.md#go-and-tinygo-applications).
 
 For a custom host page, use `go tool booba-assets --no-index web/` to skip the starter page entirely (including the existing-page notice). `--no-index` takes precedence over `--force`.
 

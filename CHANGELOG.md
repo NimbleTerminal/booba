@@ -4,6 +4,9 @@
 
 ### Changed
 
+- Add `booba-assets --toolchain tinygo` and `--wasm-exec <path>` to select the
+  runtime shim matching the app compiler. Standard Go remains the default.
+
 - Package the pinned ntwebterm runtime, declarations, WASM, and license notices
   with the JavaScript distribution. Consumers no longer need a local ntwebterm
   package. Add opt-in GitHub Packages publication; defer npmjs.com distribution.

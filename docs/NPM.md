@@ -36,16 +36,33 @@ The `connectWasm()` bridge expects `bubbletea_read`, `bubbletea_write`, and
 `bubbletea_resize` globals, plus the documented exit notifications; arbitrary
 WASM exports alone do not implement that interface.
 
-`booba-assets` currently copies standard Go's runtime shim from `go env GOROOT`.
-For a TinyGo-built app, replace that generated `wasm_exec.js` with the file at
-`<tinygo env TINYGOROOT>/targets/wasm_exec.js` from the compiler used for the build.
-Repeat after rerunning the scaffolder. TinyGo documents the requirement to match
-its shim to its compiler in [Using WASM](https://tinygo.org/docs/guides/webassembly/wasm/).
+`booba-assets` selects the runtime shim from the compiler you specify:
+
+```sh
+go tool booba-assets web/                     # standard Go (default)
+go tool booba-assets --toolchain tinygo web/  # TinyGo from PATH
+```
+
+Standard Go uses `go env GOROOT` plus `lib/wasm/wasm_exec.js`; TinyGo uses
+`tinygo env TINYGOROOT` plus `targets/wasm_exec.js`. Use the same compiler
+installation and environment that built your app. For a versioned or custom
+installation, provide the file directly (no compiler lookup is then needed):
+
+```sh
+go tool booba-assets --wasm-exec /path/to/compiler/wasm_exec.js web/
+```
+
+These options also work with the standalone `booba-assets` binary. The output
+reports the source path. Repeat the selection on each scaffold run; the tool
+cannot infer the compiler from app.wasm. It reads the shim before changing any
+output, so an invalid selection leaves existing assets untouched.
+
+TinyGo documents the requirement to match its shim to its compiler in
+[Using WASM](https://tinygo.org/docs/guides/webassembly/wasm/).
 This shim choice is necessary, but does not establish that a particular app,
 Bubble Tea version, or Booba Go bridge compiles and runs with TinyGo. That needs
 a representative TinyGo build-and-browser test. The current demo generator uses
-standard Go. A future scaffolder option for an explicit runtime-shim path would
-make this choice easier without coupling npm publication to a compiler.
+standard Go.
 
 ## Publishing setup (not enabled yet)
 
