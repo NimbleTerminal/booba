@@ -63,3 +63,24 @@ export interface BoobaLink {
     hover?(isHovered: boolean): void;
     dispose?(): void;
 }
+
+export type {
+    RendererHudOptions,
+    RendererBackend,
+    ISearchOptions,
+    ISearchDecorationOptions,
+    ISearchResult,
+    SearchHighlight,
+    ForwardNotificationsOptions,
+    ClipboardWriteEvent,
+    ClipboardReadHandler,
+    ClipboardReadRequest,
+    ClipboardContent,
+    ClipboardLocation,
+    ColorScheme,
+    DesktopNotification,
+    ProgressReport,
+    SemanticPromptEvent,
+    ResizeRequest,
+    LibghosttyBuildInfo,
+} from 'ntwebterm';

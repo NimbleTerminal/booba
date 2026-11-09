@@ -92,17 +92,17 @@ export class BoobaTerminal {
             fontSize: 15,
             cols: 80,
             rows: 24,
-            allowOSC52,
-            clipboardWrite,
             convertEol: true,
             theme: {
                 background: '#1e1e1e',
                 foreground: '#d4d4d4',
             },
             ...options,
+            allowOSC52,
+            clipboardWrite,
             fontFamily: options.fontFamily ?? '"JetBrains Mono", "Iosevka", "Cascadia Code", ui-monospace, monospace',
         };
-        this.osc52Scanner = new OSC52Scanner(this.options.allowOSC52 ?? false);
+        this.osc52Scanner = new OSC52Scanner(this.options.clipboardWrite === 'browser');
         this.actions = new ActionController({
             canSendKey: gesture => !!(this.term && this.adapter && !this.actionReadOnly &&
                 !this.options.disableStdin && !this.term.options.disableStdin &&
@@ -233,22 +233,22 @@ export class BoobaTerminal {
         term.onCursorMove(() => {
             this.onCursorMove?.();
         });
-        term.onClipboardWrite?.((event) => {
+        term.onClipboardWrite((event) => {
             this.onClipboardWrite?.(event);
         });
-        term.onPwdChange?.((pwd) => {
+        term.onPwdChange((pwd) => {
             this.onPwdChange?.(pwd);
         });
-        term.onNotification?.((notification) => {
+        term.onNotification((notification) => {
             this.onNotification?.(notification);
         });
-        term.onProgress?.((report) => {
+        term.onProgress((report) => {
             this.onProgress?.(report);
         });
-        term.onSemanticPrompt?.((event) => {
+        term.onSemanticPrompt((event) => {
             this.onSemanticPrompt?.(event);
         });
-        term.onResizeRequest?.((request) => {
+        term.onResizeRequest((request) => {
             this.onResizeRequest?.(request);
         });
     }

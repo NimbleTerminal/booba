@@ -11,6 +11,8 @@ vi.mock('ntwebterm', () => {
         loadAddon = vi.fn(); dispose = vi.fn();
         onResize = handler(); onData = handler(); onBell = handler(); onSelectionChange = handler();
         onKey = handler(); onTitleChange = handler(); onScroll = handler(); onRender = handler(); onCursorMove = handler();
+        onClipboardWrite = handler(); onPwdChange = handler(); onNotification = handler(); onProgress = handler();
+        onSemanticPrompt = handler(); onResizeRequest = handler();
     }
     class FitAddon { fit = vi.fn(); observeResize = vi.fn(); }
     class SearchAddon {}

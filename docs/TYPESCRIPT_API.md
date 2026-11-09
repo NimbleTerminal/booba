@@ -40,7 +40,12 @@ booba.focus();
 
 ## Terminal Options
 
-Supported terminal options include `fontSize`, `fontFamily`, `fontFaces`, `cols`, `rows`, `cursorBlink`, `cursorStyle`, `scrollback`, `allowOSC52`, `allowTransparency`, `convertEol`, `disableStdin`, `smoothScrollDuration`, `renderer`, and a full `theme` with 16-color palette and cursor/selection colors.
+Supported terminal options include `fontSize`, `fontFamily`, `fontFaces`, `cols`, `rows`, `cursorBlink`, `cursorStyle`, `scrollback`, `allowOSC52`, `clipboardWrite`, `clipboardRead`, `allowUnsafePaste`, `colorScheme`, `allowOSC7501Actions`, `allowTransparency`, `convertEol`, `disableStdin`, `smoothScrollDuration`, `renderer`, and a full `theme` with 16-color palette and cursor/selection colors.
+
+- **`allowOSC52`** / **`clipboardWrite`**: By default (`allowOSC52: false`), OSC 52 / OSC 5522 clipboard writes from programs are refused (`clipboardWrite: 'deny'`). Setting `allowOSC52: true` enables copying to the browser clipboard (`clipboardWrite: 'browser'`). You can also set `clipboardWrite` directly (`'browser'`, `'event'`, or `'deny'`), which overrides `allowOSC52`.
+- **`clipboardRead`**: Optional synchronous callback answering OSC 52 `?` / OSC 5522 clipboard read requests. Unset (`null`) by default so programs cannot read the clipboard silently.
+- **`allowUnsafePaste`**: Controls pastes containing line terminators outside bracketed paste or the bracketed paste end marker (`true` by default, `false` to drop, or a `(text: string) => boolean` confirmation callback).
+- **`colorScheme`**: Answer to `CSI ? 996 n` color-scheme queries (`'auto'` by default, derived from `theme.background` luminance, or `'light'` / `'dark'`).
 
 After `init()`, the container element carries the resolved `theme.background` and `theme.foreground` as the CSS custom properties `--booba-background` and `--booba-foreground`. They inherit to the container and its descendants only, so the padding around the canvas can use `var(--booba-background)` without repeating the hex value.
 
@@ -132,7 +137,26 @@ booba.onKey = (event) => { /* key pressed */ };
 booba.onScroll = (viewportY) => { /* viewport scrolled */ };
 booba.onRender = ({ start, end }) => { /* rows rendered */ };
 booba.onCursorMove = () => { /* cursor moved */ };
+booba.onClipboardWrite = (event) => { /* OSC 52 / 5522 clipboard write */ };
+booba.onPwdChange = (pwd) => { /* OSC 7 / 9;9 / 1337 working directory */ };
+booba.onNotification = (notification) => { /* OSC 9 / 777 desktop notification */ };
+booba.onProgress = (report) => { /* OSC 9;4 progress report */ };
+booba.onSemanticPrompt = (event) => { /* OSC 133 shell prompt/command event */ };
+booba.onResizeRequest = (request) => { /* CSI 8 t window resize request */ };
 ```
+
+To forward OSC 9 / OSC 777 desktop notifications to the browser `Notification` API:
+
+```javascript
+import { forwardNotificationsToBrowser } from '@nimbleterminal/booba';
+
+const notifications = forwardNotificationsToBrowser(booba.terminal, {
+    requestPermission: true,
+});
+// Later: notifications.dispose();
+```
+
+`writeTextToClipboard(text, textarea?)` is also re-exported for hosts that want to share the terminal's clipboard copy strategy.
 
 ## Program Status
 
@@ -184,13 +208,33 @@ booba.attachCustomWheelEventHandler((event) => {
 });
 ```
 
-## Lifecycle
+## Lifecycle & Terminal Metadata
 
 ```javascript
-booba.dispose()   // Clean up all resources
-booba.terminal    // Access underlying ntwebterm Terminal
-booba.cols        // Current column count
-booba.rows        // Current row count
+booba.dispose()        // Clean up all resources
+booba.terminal         // Access underlying ntwebterm Terminal
+booba.cols             // Current column count
+booba.rows             // Current row count
+booba.pwd              // Last working directory reported via OSC 7 / 9;9 / 1337
+booba.ghosttyVersion   // libghostty-vt version string (e.g. "1.0.0")
+booba.ghosttyBuildInfo // libghostty-vt compile-time configuration
+```
+
+## Search (`SearchAddon`)
+
+Booba re-exports `SearchAddon` (backed by `libghostty-vt`'s incremental scrollback and screen search):
+
+```javascript
+import { SearchAddon } from '@nimbleterminal/booba';
+
+const search = new SearchAddon();
+booba.terminal.loadAddon(search);
+search.onDidChangeResults(({ resultIndex, resultCount }) => {
+    console.log(`${resultIndex + 1} of ${resultCount}`);
+});
+search.findNext('error');
+search.findPrevious('error');
+search.clearDecorations();
 ```
 
 ## Renderer HUD (Optional Dev Feature)
@@ -258,6 +302,24 @@ import type {
     BoobaLink,
     BoobaAdapter,
     BoobaConnectionState,
+    RendererBackend,
+    RendererHudOptions,
+    ISearchOptions,
+    ISearchDecorationOptions,
+    ISearchResult,
+    SearchHighlight,
+    ForwardNotificationsOptions,
+    ClipboardWriteEvent,
+    ClipboardReadHandler,
+    ClipboardReadRequest,
+    ClipboardContent,
+    ClipboardLocation,
+    ColorScheme,
+    DesktopNotification,
+    ProgressReport,
+    SemanticPromptEvent,
+    ResizeRequest,
+    LibghosttyBuildInfo,
 } from './booba/booba.js';
 ```
 

@@ -9,12 +9,10 @@ import type { ProgramStatusReport, ProgramStatusSource } from './program_status.
 import { ActionStatusBridge } from './action_status.js';
 import { ProgramStatusStore } from './program_status_store.js';
 import { TerminalSequenceObserver } from './terminal_sequences.js';
-import type { BoobaTheme, BoobaBufferRange, BoobaLinkProvider } from './types.js';
-import { applyThemeProperties } from './theme_properties.js';
-import { TouchInput } from './touch_input.js';
-
 import type {
-    ITerminalOptions,
+    BoobaTheme,
+    BoobaBufferRange,
+    BoobaLinkProvider,
     RendererBackend,
     ClipboardWriteEvent,
     ClipboardReadHandler,
@@ -24,7 +22,11 @@ import type {
     SemanticPromptEvent,
     ResizeRequest,
     LibghosttyBuildInfo,
-} from 'ntwebterm';
+} from './types.js';
+import { applyThemeProperties } from './theme_properties.js';
+import { TouchInput } from './touch_input.js';
+
+import type { ITerminalOptions } from 'ntwebterm';
 
 export interface BoobaTerminalOptions {
     fontSize?: ITerminalOptions['fontSize'];
@@ -173,17 +175,17 @@ export class BoobaTerminal {
             fontSize: 15,
             cols: 80,
             rows: 24,
-            allowOSC52,
-            clipboardWrite,
             convertEol: true,
             theme: {
                 background: '#1e1e1e',
                 foreground: '#d4d4d4',
             },
             ...options,
+            allowOSC52,
+            clipboardWrite,
             fontFamily: options.fontFamily ?? '"JetBrains Mono", "Iosevka", "Cascadia Code", ui-monospace, monospace',
         };
-        this.osc52Scanner = new OSC52Scanner(this.options.allowOSC52 ?? false);
+        this.osc52Scanner = new OSC52Scanner(this.options.clipboardWrite === 'browser');
         this.actions = new ActionController({
             canSendKey: gesture => !!(this.term && this.adapter && !this.actionReadOnly &&
                 !this.options.disableStdin && !this.term.options.disableStdin &&
@@ -321,27 +323,27 @@ export class BoobaTerminal {
             this.onCursorMove?.();
         });
 
-        term.onClipboardWrite?.((event) => {
+        term.onClipboardWrite((event) => {
             this.onClipboardWrite?.(event);
         });
 
-        term.onPwdChange?.((pwd) => {
+        term.onPwdChange((pwd) => {
             this.onPwdChange?.(pwd);
         });
 
-        term.onNotification?.((notification) => {
+        term.onNotification((notification) => {
             this.onNotification?.(notification);
         });
 
-        term.onProgress?.((report) => {
+        term.onProgress((report) => {
             this.onProgress?.(report);
         });
 
-        term.onSemanticPrompt?.((event) => {
+        term.onSemanticPrompt((event) => {
             this.onSemanticPrompt?.(event);
         });
 
-        term.onResizeRequest?.((request) => {
+        term.onResizeRequest((request) => {
             this.onResizeRequest?.(request);
         });
     }
@@ -736,7 +738,32 @@ export { BoobaAutoAdapter } from './auto_adapter.js';
 export { BoobaWebTransportAdapter } from './webtransport_adapter.js';
 export { OSC52Scanner } from './clipboard.js';
 export { resolveBoobaURLs, type BoobaURLs } from './urls.js';
-export type { BoobaTheme, BoobaBufferRange, BoobaKeyEvent, BoobaRenderEvent, BoobaLinkProvider, BoobaLink } from './types.js';
+export type {
+    BoobaTheme,
+    BoobaBufferRange,
+    BoobaKeyEvent,
+    BoobaRenderEvent,
+    BoobaLinkProvider,
+    BoobaLink,
+    RendererHudOptions,
+    RendererBackend,
+    ISearchOptions,
+    ISearchDecorationOptions,
+    ISearchResult,
+    SearchHighlight,
+    ForwardNotificationsOptions,
+    ClipboardWriteEvent,
+    ClipboardReadHandler,
+    ClipboardReadRequest,
+    ClipboardContent,
+    ClipboardLocation,
+    ColorScheme,
+    DesktopNotification,
+    ProgressReport,
+    SemanticPromptEvent,
+    ResizeRequest,
+    LibghosttyBuildInfo,
+} from './types.js';
 
 // HUD, Search, Clipboard, and Notification utilities — re-exported from ntwebterm
 export {
@@ -745,28 +772,10 @@ export {
     SearchAddon,
     forwardNotificationsToBrowser,
     writeTextToClipboard,
-    type RendererHudOptions,
-    type RendererBackend,
-    type ISearchOptions,
-    type ISearchDecorationOptions,
-    type ISearchResult,
-    type SearchHighlight,
-    type ForwardNotificationsOptions,
-    type ClipboardWriteEvent,
-    type ClipboardReadHandler,
-    type ClipboardReadRequest,
-    type ClipboardContent,
-    type ClipboardLocation,
-    type ColorScheme,
-    type DesktopNotification,
-    type ProgressReport,
-    type SemanticPromptEvent,
-    type ResizeRequest,
-    type LibghosttyBuildInfo,
 } from 'ntwebterm';
 
 // Deprecated aliases for source compatibility
-import type { RendererHudOptions, RendererBackend as _RendererBackend } from 'ntwebterm';
+import type { RendererHudOptions, RendererBackend as _RendererBackend } from './types.js';
 
 /**
  * @deprecated Renamed to RendererHudOptions when the HUD moved to ntwebterm.

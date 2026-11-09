@@ -73,8 +73,32 @@ describe('BoobaTerminal OSC 52 on program output', () => {
         expect(terminal.write).toHaveBeenCalledWith(copy, undefined);
     });
 
-    it('honors explicit clipboardWrite option over allowOSC52', () => {
-        const booba = new BoobaTerminal('unused', { allowOSC52: false, clipboardWrite: 'event' });
-        expect(booba.options.clipboardWrite).toBe('event');
+    it('honors explicit clipboardWrite option over allowOSC52, including in fallback scanner', () => {
+        const eventOnly = new BoobaTerminal('unused', { allowOSC52: false, clipboardWrite: 'event' });
+        expect(eventOnly.options.clipboardWrite).toBe('event');
+
+        const denied = new BoobaTerminal('unused', { allowOSC52: true, clipboardWrite: 'deny' });
+        expect(denied.options.clipboardWrite).toBe('deny');
+        const adapter = new Adapter();
+        denied.connectAdapter(adapter);
+        adapter.output(copy);
+        expect(writeText).not.toHaveBeenCalled();
+
+        const browserEnabled = new BoobaTerminal('unused', { allowOSC52: false, clipboardWrite: 'browser' });
+        expect(browserEnabled.options.clipboardWrite).toBe('browser');
+        const adapter2 = new Adapter();
+        browserEnabled.connectAdapter(adapter2);
+        adapter2.output(copy);
+        expect(writeText).toHaveBeenCalledWith('hello');
+    });
+
+    it('preserves default deny policy when clipboardWrite or allowOSC52 are explicitly undefined', () => {
+        const booba = new BoobaTerminal('unused', { allowOSC52: undefined, clipboardWrite: undefined });
+        expect(booba.options.allowOSC52).toBe(false);
+        expect(booba.options.clipboardWrite).toBe('deny');
+
+        const allowed = new BoobaTerminal('unused', { allowOSC52: true, clipboardWrite: undefined });
+        expect(allowed.options.allowOSC52).toBe(true);
+        expect(allowed.options.clipboardWrite).toBe('browser');
     });
 });
