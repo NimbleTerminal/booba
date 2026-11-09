@@ -13,7 +13,18 @@ import type { BoobaTheme, BoobaBufferRange, BoobaLinkProvider } from './types.js
 import { applyThemeProperties } from './theme_properties.js';
 import { TouchInput } from './touch_input.js';
 
-import type { ITerminalOptions, RendererBackend } from 'ntwebterm';
+import type {
+    ITerminalOptions,
+    RendererBackend,
+    ClipboardWriteEvent,
+    ClipboardReadHandler,
+    ColorScheme,
+    DesktopNotification,
+    ProgressReport,
+    SemanticPromptEvent,
+    ResizeRequest,
+    LibghosttyBuildInfo,
+} from 'ntwebterm';
 
 export interface BoobaTerminalOptions {
     fontSize?: ITerminalOptions['fontSize'];
@@ -25,7 +36,34 @@ export interface BoobaTerminalOptions {
     cursorBlink?: boolean;
     cursorStyle?: 'block' | 'underline' | 'bar';
     scrollback?: number;
+    /**
+     * Allow OSC 52 clipboard writes to the browser clipboard (default: false).
+     * When `clipboardWrite` is not explicitly set, `allowOSC52: true` maps to
+     * `clipboardWrite: 'browser'` and `allowOSC52: false` maps to `'deny'`.
+     */
     allowOSC52?: boolean;
+    /**
+     * How OSC 52 / OSC 5522 clipboard writes from programs are handled.
+     * Overrides `allowOSC52` when specified.
+     */
+    clipboardWrite?: ITerminalOptions['clipboardWrite'];
+    /**
+     * Answers OSC 52 "?" / OSC 5522 clipboard reads synchronously. Reads are
+     * refused when unset, so programs can never read the clipboard silently.
+     */
+    clipboardRead?: ClipboardReadHandler | null;
+    /**
+     * Pastes that could inject commands: a line terminator outside bracketed
+     * paste, or the bracketed paste end marker. `true` (default) pastes them
+     * as xterm.js does, `false` drops them, and a callback may confirm with
+     * the person using the terminal and return true to paste.
+     */
+    allowUnsafePaste?: ITerminalOptions['allowUnsafePaste'];
+    /**
+     * Answer to CSI ? 996 n color scheme queries. 'auto' (default) derives it
+     * from the luminance of theme.background.
+     */
+    colorScheme?: 'auto' | ColorScheme;
     /** Experimental, disabled by default. Interpret the private booba-actions msg convention; its schema may change. */
     allowOSC7501Actions?: boolean;
     allowTransparency?: boolean;
@@ -120,14 +158,23 @@ export class BoobaTerminal {
     onScroll: ((viewportY: number) => void) | null = null;
     onRender: ((event: { start: number; end: number }) => void) | null = null;
     onCursorMove: (() => void) | null = null;
+    onClipboardWrite: ((event: ClipboardWriteEvent) => void) | null = null;
+    onPwdChange: ((pwd: string) => void) | null = null;
+    onNotification: ((notification: DesktopNotification) => void) | null = null;
+    onProgress: ((report: ProgressReport) => void) | null = null;
+    onSemanticPrompt: ((event: SemanticPromptEvent) => void) | null = null;
+    onResizeRequest: ((request: ResizeRequest) => void) | null = null;
 
     constructor(containerId: string, options: BoobaTerminalOptions = {}) {
         this.container = document.getElementById(containerId);
+        const allowOSC52 = options.allowOSC52 ?? false;
+        const clipboardWrite = options.clipboardWrite ?? (allowOSC52 ? 'browser' : 'deny');
         this.options = {
             fontSize: 15,
             cols: 80,
             rows: 24,
-            allowOSC52: false,
+            allowOSC52,
+            clipboardWrite,
             convertEol: true,
             theme: {
                 background: '#1e1e1e',
@@ -273,6 +320,30 @@ export class BoobaTerminal {
         term.onCursorMove(() => {
             this.onCursorMove?.();
         });
+
+        term.onClipboardWrite?.((event) => {
+            this.onClipboardWrite?.(event);
+        });
+
+        term.onPwdChange?.((pwd) => {
+            this.onPwdChange?.(pwd);
+        });
+
+        term.onNotification?.((notification) => {
+            this.onNotification?.(notification);
+        });
+
+        term.onProgress?.((report) => {
+            this.onProgress?.(report);
+        });
+
+        term.onSemanticPrompt?.((event) => {
+            this.onSemanticPrompt?.(event);
+        });
+
+        term.onResizeRequest?.((request) => {
+            this.onResizeRequest?.(request);
+        });
     }
 
     /**
@@ -352,7 +423,9 @@ export class BoobaTerminal {
         adapter.connect(
             (data: string | Uint8Array) => {
                 if (this.adapter !== adapter) return;
-                this.osc52Scanner.scan(data);
+                if (typeof this.term?.onClipboardWrite !== 'function') {
+                    this.osc52Scanner.scan(data);
+                }
                 this.writeLiveOutput(data);
             },
             (state: BoobaConnectionState, message: string) => {
@@ -587,6 +660,21 @@ export class BoobaTerminal {
         return this.term?.rows ?? 0;
     }
 
+    /** Working directory the shell last reported (OSC 7 / 9;9 / 1337), or empty string if none */
+    get pwd(): string {
+        return this.term?.pwd ?? '';
+    }
+
+    /** Version of the libghostty-vt this terminal runs on, e.g. "1.0.0" */
+    get ghosttyVersion(): string | undefined {
+        return this.term?.ghosttyVersion;
+    }
+
+    /** Compile-time configuration of the loaded libghostty-vt */
+    get ghosttyBuildInfo(): LibghosttyBuildInfo | undefined {
+        return this.term?.ghosttyBuildInfo;
+    }
+
     private _updateStatus(state: string, message: string) {
         if (this.onStatusChange) {
             this.onStatusChange(state, message);
@@ -610,7 +698,8 @@ export class BoobaTerminal {
 
     /**
      * Watch for devicePixelRatio changes (browser zoom, moving between displays).
-     * Patches the renderer's cached DPR and forces a canvas re-scale.
+     * ntwebterm re-measures fonts and resizes the canvas internally on DPR change;
+     * we refit the grid here in case cell dimensions shifted.
      */
     private _watchDevicePixelRatio(): () => void {
         let currentDpr = window.devicePixelRatio;
@@ -620,12 +709,6 @@ export class BoobaTerminal {
             const newDpr = window.devicePixelRatio;
             if (newDpr !== currentDpr) {
                 currentDpr = newDpr;
-                const term = this.term;
-                const renderer = term?.renderer;
-                if (term && renderer) {
-                    (renderer as any).devicePixelRatio = newDpr;
-                    renderer.resize(term.cols, term.rows);
-                }
                 this.fitAddon?.fit();
             }
             // Re-register: matchMedia for DPR is a one-shot per value
@@ -655,8 +738,32 @@ export { OSC52Scanner } from './clipboard.js';
 export { resolveBoobaURLs, type BoobaURLs } from './urls.js';
 export type { BoobaTheme, BoobaBufferRange, BoobaKeyEvent, BoobaRenderEvent, BoobaLinkProvider, BoobaLink } from './types.js';
 
-// HUD utilities (optional, treeshakeable) — re-exported from ntwebterm
-export { installRendererHud, parseRendererFromURL, type RendererHudOptions, type RendererBackend } from 'ntwebterm';
+// HUD, Search, Clipboard, and Notification utilities — re-exported from ntwebterm
+export {
+    installRendererHud,
+    parseRendererFromURL,
+    SearchAddon,
+    forwardNotificationsToBrowser,
+    writeTextToClipboard,
+    type RendererHudOptions,
+    type RendererBackend,
+    type ISearchOptions,
+    type ISearchDecorationOptions,
+    type ISearchResult,
+    type SearchHighlight,
+    type ForwardNotificationsOptions,
+    type ClipboardWriteEvent,
+    type ClipboardReadHandler,
+    type ClipboardReadRequest,
+    type ClipboardContent,
+    type ClipboardLocation,
+    type ColorScheme,
+    type DesktopNotification,
+    type ProgressReport,
+    type SemanticPromptEvent,
+    type ResizeRequest,
+    type LibghosttyBuildInfo,
+} from 'ntwebterm';
 
 // Deprecated aliases for source compatibility
 import type { RendererHudOptions, RendererBackend as _RendererBackend } from 'ntwebterm';

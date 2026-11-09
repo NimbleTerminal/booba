@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { readFileSync } from 'node:fs';
 import type { BoobaAdapter, BoobaConnectionState } from './adapter.js';
-vi.mock('ntwebterm', () => ({ init: vi.fn(), Terminal: class {}, FitAddon: class {}, installRendererHud: vi.fn(), parseRendererFromURL: vi.fn() }));
+vi.mock('ntwebterm', () => ({ init: vi.fn(), Terminal: class {}, FitAddon: class {}, SearchAddon: class {}, installRendererHud: vi.fn(), parseRendererFromURL: vi.fn(), forwardNotificationsToBrowser: vi.fn(), writeTextToClipboard: vi.fn() }));
 import { BoobaTerminal } from './booba.js';
 import { ACTION_MESSAGE_MARKER, actionStatusID } from './action_status.js';
 import type { ProgramStatusReport } from './program_status.js';

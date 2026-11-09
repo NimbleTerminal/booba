@@ -1,6 +1,6 @@
 import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
 import type { BoobaAdapter, BoobaConnectionState } from './adapter.js';
-vi.mock('ntwebterm', () => ({ init: vi.fn(), Terminal: class {}, FitAddon: class {}, installRendererHud: vi.fn(), parseRendererFromURL: vi.fn() }));
+vi.mock('ntwebterm', () => ({ init: vi.fn(), Terminal: class {}, FitAddon: class {}, SearchAddon: class {}, installRendererHud: vi.fn(), parseRendererFromURL: vi.fn(), forwardNotificationsToBrowser: vi.fn(), writeTextToClipboard: vi.fn() }));
 import { BoobaTerminal } from './booba.js';
 
 // Program output reaches the terminal as bytes from a WebSocket and as
@@ -43,8 +43,38 @@ describe('BoobaTerminal OSC 52 on program output', () => {
     });
 
     it('does not copy when allowOSC52 is off', () => {
-        const { adapter } = setup(false);
+        const { booba, adapter } = setup(false);
+        expect(booba.options.clipboardWrite).toBe('deny');
         adapter.output(copy);
         expect(writeText).not.toHaveBeenCalled();
+    });
+
+    it('delegates to native ntwebterm clipboardWrite when onClipboardWrite is present', () => {
+        const booba = new BoobaTerminal('unused', { allowOSC52: true });
+        expect(booba.options.clipboardWrite).toBe('browser');
+        const terminal = {
+            options: { disableStdin: false },
+            input: vi.fn(),
+            write: vi.fn(),
+            reset: vi.fn(),
+            dispose: vi.fn(),
+            cols: 80,
+            rows: 24,
+            onClipboardWrite: vi.fn(() => ({ dispose: vi.fn() })),
+            onProgramStatus: vi.fn(() => ({ dispose: vi.fn() })),
+        };
+        booba.term = terminal as unknown as NonNullable<BoobaTerminal['term']>;
+        const adapter = new Adapter();
+        booba.connectAdapter(adapter);
+        adapter.output(copy);
+        // OSC52Scanner is skipped when the terminal supports native onClipboardWrite;
+        // the sequence is written to the terminal for libghostty-vt to handle.
+        expect(writeText).not.toHaveBeenCalled();
+        expect(terminal.write).toHaveBeenCalledWith(copy, undefined);
+    });
+
+    it('honors explicit clipboardWrite option over allowOSC52', () => {
+        const booba = new BoobaTerminal('unused', { allowOSC52: false, clipboardWrite: 'event' });
+        expect(booba.options.clipboardWrite).toBe('event');
     });
 });

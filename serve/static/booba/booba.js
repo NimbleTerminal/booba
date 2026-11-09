@@ -79,12 +79,21 @@ export class BoobaTerminal {
         this.onScroll = null;
         this.onRender = null;
         this.onCursorMove = null;
+        this.onClipboardWrite = null;
+        this.onPwdChange = null;
+        this.onNotification = null;
+        this.onProgress = null;
+        this.onSemanticPrompt = null;
+        this.onResizeRequest = null;
         this.container = document.getElementById(containerId);
+        const allowOSC52 = options.allowOSC52 ?? false;
+        const clipboardWrite = options.clipboardWrite ?? (allowOSC52 ? 'browser' : 'deny');
         this.options = {
             fontSize: 15,
             cols: 80,
             rows: 24,
-            allowOSC52: false,
+            allowOSC52,
+            clipboardWrite,
             convertEol: true,
             theme: {
                 background: '#1e1e1e',
@@ -224,6 +233,24 @@ export class BoobaTerminal {
         term.onCursorMove(() => {
             this.onCursorMove?.();
         });
+        term.onClipboardWrite?.((event) => {
+            this.onClipboardWrite?.(event);
+        });
+        term.onPwdChange?.((pwd) => {
+            this.onPwdChange?.(pwd);
+        });
+        term.onNotification?.((notification) => {
+            this.onNotification?.(notification);
+        });
+        term.onProgress?.((report) => {
+            this.onProgress?.(report);
+        });
+        term.onSemanticPrompt?.((event) => {
+            this.onSemanticPrompt?.(event);
+        });
+        term.onResizeRequest?.((request) => {
+            this.onResizeRequest?.(request);
+        });
     }
     /**
      * Connect to a BubbleTea backend via WebSocket
@@ -305,7 +332,9 @@ export class BoobaTerminal {
         adapter.connect((data) => {
             if (this.adapter !== adapter)
                 return;
-            this.osc52Scanner.scan(data);
+            if (typeof this.term?.onClipboardWrite !== 'function') {
+                this.osc52Scanner.scan(data);
+            }
             this.writeLiveOutput(data);
         }, (state, message) => {
             if (this.adapter !== adapter)
@@ -504,6 +533,18 @@ export class BoobaTerminal {
     get rows() {
         return this.term?.rows ?? 0;
     }
+    /** Working directory the shell last reported (OSC 7 / 9;9 / 1337), or empty string if none */
+    get pwd() {
+        return this.term?.pwd ?? '';
+    }
+    /** Version of the libghostty-vt this terminal runs on, e.g. "1.0.0" */
+    get ghosttyVersion() {
+        return this.term?.ghosttyVersion;
+    }
+    /** Compile-time configuration of the loaded libghostty-vt */
+    get ghosttyBuildInfo() {
+        return this.term?.ghosttyBuildInfo;
+    }
     _updateStatus(state, message) {
         if (this.onStatusChange) {
             this.onStatusChange(state, message);
@@ -526,7 +567,8 @@ export class BoobaTerminal {
     }
     /**
      * Watch for devicePixelRatio changes (browser zoom, moving between displays).
-     * Patches the renderer's cached DPR and forces a canvas re-scale.
+     * ntwebterm re-measures fonts and resizes the canvas internally on DPR change;
+     * we refit the grid here in case cell dimensions shifted.
      */
     _watchDevicePixelRatio() {
         let currentDpr = window.devicePixelRatio;
@@ -535,12 +577,6 @@ export class BoobaTerminal {
             const newDpr = window.devicePixelRatio;
             if (newDpr !== currentDpr) {
                 currentDpr = newDpr;
-                const term = this.term;
-                const renderer = term?.renderer;
-                if (term && renderer) {
-                    renderer.devicePixelRatio = newDpr;
-                    renderer.resize(term.cols, term.rows);
-                }
                 this.fitAddon?.fit();
             }
             // Re-register: matchMedia for DPR is a one-shot per value
@@ -564,8 +600,8 @@ export { BoobaAutoAdapter } from './auto_adapter.js';
 export { BoobaWebTransportAdapter } from './webtransport_adapter.js';
 export { OSC52Scanner } from './clipboard.js';
 export { resolveBoobaURLs } from './urls.js';
-// HUD utilities (optional, treeshakeable) — re-exported from ntwebterm
-export { installRendererHud, parseRendererFromURL } from '../ntwebterm/ntwebterm.js';
+// HUD, Search, Clipboard, and Notification utilities — re-exported from ntwebterm
+export { installRendererHud, parseRendererFromURL, SearchAddon, forwardNotificationsToBrowser, writeTextToClipboard, } from '../ntwebterm/ntwebterm.js';
 // Transport-independent terminal actions and optional host UI.
 export { ActionController, ACTION_LIMITS, validateActionSnapshot, decodeActionSnapshot } from './actions.js';
 export { installActionBar, ACTION_BAR_CSS } from './action_bar.js';

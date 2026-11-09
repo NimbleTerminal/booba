@@ -13,7 +13,8 @@ vi.mock('ntwebterm', () => {
         onKey = handler(); onTitleChange = handler(); onScroll = handler(); onRender = handler(); onCursorMove = handler();
     }
     class FitAddon { fit = vi.fn(); observeResize = vi.fn(); }
-    return { init: vi.fn(async () => {}), Terminal, FitAddon, installRendererHud: vi.fn(), parseRendererFromURL: vi.fn() };
+    class SearchAddon {}
+    return { init: vi.fn(async () => {}), Terminal, FitAddon, SearchAddon, installRendererHud: vi.fn(), parseRendererFromURL: vi.fn(), forwardNotificationsToBrowser: vi.fn(), writeTextToClipboard: vi.fn() };
 });
 import { BoobaTerminal } from './booba.js';
 import { BoobaProtocolAdapter, type WebSocketAdapterCallbacks } from './websocket_adapter.js';

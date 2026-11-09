@@ -1,5 +1,23 @@
 # `booba` CHANGELOG
 
+## [Unreleased]
+
+### Added
+
+- Surface `ntwebterm` v0.5.0 options (`clipboardWrite`, `clipboardRead`,
+  `allowUnsafePaste`, `colorScheme`), effect events (`onClipboardWrite`,
+  `onPwdChange`, `onNotification`, `onProgress`, `onSemanticPrompt`,
+  `onResizeRequest`), getters (`pwd`, `ghosttyVersion`, `ghosttyBuildInfo`), and
+  re-exports (`SearchAddon`, `forwardNotificationsToBrowser`,
+  `writeTextToClipboard`).
+
+### Changed
+
+- Refresh ntwebterm to v0.5.0 (libghostty-vt 1.0.0), built commit `25cb576` from
+  source `dc24287`. Map `allowOSC52` to `clipboardWrite` (`'deny'` by default,
+  `'browser'` when enabled) so native OSC 52 / 5522 handling respects booba's
+  opt-in clipboard policy.
+
 ## [0.12.1] - 2026-11-04
 
 ### Changed
