@@ -19,7 +19,7 @@
   "scripts": {
     "build": "node scripts/build-npm.mjs",
     "build:embed": "tsc -p tsconfig.embed.json && sed -i.bak -e \"s|from 'ntwebterm'|from '../ntwebterm/ntwebterm.js'|\" serve/static/booba/booba.js && rm serve/static/booba/booba.js.bak",
-    "test": "vitest run",
+    "test": "tsc -p tsconfig.test.json && vitest run",
     "test:watch": "vitest",
     "prepack": "npm run build",
     "test:package": "node scripts/test-npm-package.mjs"

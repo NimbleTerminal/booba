@@ -1,21 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-vi.mock('ntwebterm', () => {
-    const handler = () => vi.fn(() => ({ dispose: vi.fn() }));
-    class Terminal {
-        options: Record<string, unknown>;
-        cols = 80; rows = 24;
-        constructor(options: Record<string, unknown>) { this.options = options; }
-        open = vi.fn(async () => {});
-        loadAddon = vi.fn(); dispose = vi.fn();
-        onResize = handler(); onData = handler(); onBell = handler(); onSelectionChange = handler();
-        onKey = handler(); onTitleChange = handler(); onScroll = handler(); onRender = handler(); onCursorMove = handler();
-        onClipboardWrite = handler(); onPwdChange = handler(); onNotification = handler(); onProgress = handler();
-        onSemanticPrompt = handler(); onResizeRequest = handler();
-    }
-    class FitAddon { fit = vi.fn(); observeResize = vi.fn(); }
-    class SearchAddon {}
-    return { init: vi.fn(async () => {}), Terminal, FitAddon, SearchAddon, installRendererHud: vi.fn(), parseRendererFromURL: vi.fn(), forwardNotificationsToBrowser: vi.fn(), writeTextToClipboard: vi.fn() };
-});
+vi.mock('ntwebterm', () => import('./testing/ntwebterm_mock.js'));
 import { BoobaTerminal, type BoobaTerminalOptions } from './booba.js';
 
 describe('BoobaTerminal theme bridge', () => {

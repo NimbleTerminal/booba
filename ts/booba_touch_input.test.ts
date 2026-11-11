@@ -1,22 +1,13 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-vi.mock('ntwebterm', () => {
-    const handler = () => vi.fn(() => ({ dispose: vi.fn() }));
-    class Terminal {
-        cols = 80; rows = 24;
-        options: Record<string, unknown>;
+vi.mock('ntwebterm', async () => {
+    const mock = await import('./testing/ntwebterm_mock.js');
+    // Touch gestures need a canvas to hit, cell metrics, and mouse tracking on.
+    class Terminal extends mock.Terminal {
         renderer = { getMetrics: () => ({ width: 10, height: 20 }) };
-        constructor(options: Record<string, unknown>) { this.options = options; }
-        open = async (host: HTMLElement) => { host.append(document.createElement('canvas')); };
+        open = vi.fn(async (host: HTMLElement) => { host.append(document.createElement('canvas')); });
         hasMouseTracking = () => true;
-        loadAddon = vi.fn(); dispose = vi.fn();
-        onResize = handler(); onData = handler(); onBell = handler(); onSelectionChange = handler();
-        onKey = handler(); onTitleChange = handler(); onScroll = handler(); onRender = handler(); onCursorMove = handler();
-        onClipboardWrite = handler(); onPwdChange = handler(); onNotification = handler(); onProgress = handler();
-        onSemanticPrompt = handler(); onResizeRequest = handler();
     }
-    class FitAddon { fit = vi.fn(); observeResize = vi.fn(); }
-    class SearchAddon {}
-    return { init: vi.fn(async () => {}), Terminal, FitAddon, SearchAddon, installRendererHud: vi.fn(), parseRendererFromURL: vi.fn(), forwardNotificationsToBrowser: vi.fn(), writeTextToClipboard: vi.fn() };
+    return { ...mock, Terminal };
 });
 import { BoobaTerminal } from './booba.js';
 import { BoobaProtocolAdapter, type WebSocketAdapterCallbacks } from './websocket_adapter.js';
