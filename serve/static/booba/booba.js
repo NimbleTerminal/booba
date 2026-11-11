@@ -2,7 +2,6 @@ import { init, Terminal, FitAddon } from '../ntwebterm/ntwebterm.js';
 import { BoobaWasmAdapter } from './adapter.js';
 import { BoobaProtocolAdapter } from './websocket_adapter.js';
 import { BoobaAutoAdapter } from './auto_adapter.js';
-import { OSC52Scanner } from './clipboard.js';
 import { encodeKey as encodeLegacyKey } from './key_encoder.js';
 import { ActionController } from './actions.js';
 import { ActionStatusBridge } from './action_status.js';
@@ -102,7 +101,6 @@ export class BoobaTerminal {
             clipboardWrite,
             fontFamily: options.fontFamily ?? '"JetBrains Mono", "Iosevka", "Cascadia Code", ui-monospace, monospace',
         };
-        this.osc52Scanner = new OSC52Scanner(this.options.clipboardWrite === 'browser');
         this.actions = new ActionController({
             canSendKey: gesture => !!(this.term && this.adapter && !this.actionReadOnly &&
                 !this.options.disableStdin && !this.term.options.disableStdin &&
@@ -332,9 +330,6 @@ export class BoobaTerminal {
         adapter.connect((data) => {
             if (this.adapter !== adapter)
                 return;
-            if (typeof this.term?.onClipboardWrite !== 'function') {
-                this.osc52Scanner.scan(data);
-            }
             this.writeLiveOutput(data);
         }, (state, message) => {
             if (this.adapter !== adapter)

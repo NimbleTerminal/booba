@@ -1,5 +1,10 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+vi.mock('ntwebterm', () => import('./testing/ntwebterm_mock.js'));
+import { writeTextToClipboard } from 'ntwebterm';
 import { OSC52Scanner } from './clipboard.js';
+
+// The scanner copies through ntwebterm's writeTextToClipboard.
+const writeText = vi.mocked(writeTextToClipboard);
 
 // OSC 52 wire format: ESC ] 52 ; <selection> ; <base64> <terminator>
 // Terminator is either BEL (0x07) or ST (ESC \ = 0x1b 0x5c).
@@ -18,11 +23,8 @@ const b64 = (s: string): string => {
 };
 
 describe('OSC52Scanner', () => {
-    let writeText: ReturnType<typeof vi.fn>;
-
     beforeEach(() => {
-        writeText = vi.fn().mockResolvedValue(undefined);
-        vi.stubGlobal('navigator', { clipboard: { writeText } });
+        writeText.mockClear();
     });
 
     afterEach(() => {
@@ -111,11 +113,8 @@ describe('OSC52Scanner', () => {
 // The wasm adapter delivers program output as strings, not bytes: the
 // scanner must find OSC 52 in either, and decode the payload as UTF-8.
 describe('OSC52Scanner on string output', () => {
-    let writeText: ReturnType<typeof vi.fn>;
-
     beforeEach(() => {
-        writeText = vi.fn().mockResolvedValue(undefined);
-        vi.stubGlobal('navigator', { clipboard: { writeText } });
+        writeText.mockClear();
     });
 
     afterEach(() => {

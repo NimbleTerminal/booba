@@ -17,6 +17,10 @@
   source `dc24287`. Map `allowOSC52` to `clipboardWrite` (`'deny'` by default,
   `'browser'` when enabled) so native OSC 52 / 5522 handling respects booba's
   opt-in clipboard policy.
+- `BoobaTerminal` no longer scans program output with `OSC52Scanner`; ntwebterm
+  handles OSC 52 / 5522 under `clipboardWrite`. The `OSC52Scanner` export is
+  deprecated and remains for hosts that scan a raw stream; it now copies
+  through ntwebterm's `writeTextToClipboard`.
 
 ## [0.12.1] - 2026-11-04
 

@@ -5,12 +5,23 @@
  * content to the system clipboard. Output arrives as bytes from a
  * WebSocket and as strings from the wasm bridge; both are scanned.
  *
+ * BoobaTerminal does not use this: ntwebterm handles OSC 52 natively under
+ * its `clipboardWrite` option. It remains for hosts scanning a raw stream.
+ * Copies go through ntwebterm's `writeTextToClipboard`, so both paths share
+ * the same browser fallbacks. OSC 5522 is not recognized here.
+ *
  * OSC 52 format: \x1b]52;c;<base64-data>\a (or \x1b\\ as terminator)
  * The base64 payload is UTF-8 text.
  */
+import { writeTextToClipboard } from '../ntwebterm/ntwebterm.js';
 const OSC_START = '\x1b]52;';
 const ST_BEL = '\x07';
 const ST_ESC = '\x1b\\';
+/**
+ * @deprecated BoobaTerminal no longer scans output itself: ntwebterm handles
+ * OSC 52 / OSC 5522 natively under the `clipboardWrite` option. Kept for hosts
+ * that scan a stream without a terminal.
+ */
 export class OSC52Scanner {
     constructor(allowOSC52 = false) {
         this.allowOSC52 = allowOSC52;
@@ -42,8 +53,7 @@ export class OSC52Scanner {
                 const base64Data = payload.substring(semiIdx + 1);
                 if (base64Data.length > 0) {
                     try {
-                        const decoded = decodeUTF8Base64(base64Data);
-                        navigator.clipboard.writeText(decoded).catch(() => { });
+                        writeTextToClipboard(decodeUTF8Base64(base64Data));
                     }
                     catch {
                         // Invalid base64
