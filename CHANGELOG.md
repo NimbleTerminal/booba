@@ -1,6 +1,6 @@
 # `booba` CHANGELOG
 
-## [Unreleased]
+## [0.13.0] - 2026-11-12
 
 ### Added
 
