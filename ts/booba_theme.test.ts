@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 vi.mock('ntwebterm', () => import('./testing/ntwebterm_mock.js'));
-import { BoobaTerminal, type BoobaTerminalOptions } from './booba.js';
+import { BoobaTerminal, Key, KeyAction, Mods, type BoobaTerminalOptions, type KeyEvent } from './booba.js';
 
 describe('BoobaTerminal theme bridge', () => {
     it('init() exposes the resolved theme colors as custom properties on the container', async () => {
@@ -49,6 +49,36 @@ describe('BoobaTerminal font options', () => {
             expect(booba.term!.options.fontSize).toBe(14);
             expect(booba.term!.options.fontFaces).toBe(fontFaces);
             expect(options).toEqual({ fontFamily: 'My Mono, monospace', fontSize: 14, fontFaces });
+        } finally {
+            booba.dispose();
+            container.remove();
+        }
+    });
+});
+
+describe('BoobaTerminal input and parsed-write hooks', () => {
+    it('forwards macOptionIsMeta and sendKey, and subscribes to onWriteParsed lazily', async () => {
+        const container = document.createElement('div');
+        container.id = 'hooks-host';
+        document.body.append(container);
+        vi.spyOn(console, 'log').mockImplementation(() => {});
+        const booba = new BoobaTerminal(container.id, { macOptionIsMeta: true });
+        try {
+            await booba.init();
+            expect(booba.term!.options.macOptionIsMeta).toBe(true);
+            expect(booba.term!.onWriteParsed).not.toHaveBeenCalled();
+
+            const seen = vi.fn();
+            booba.onWriteParsed = seen;
+            expect(booba.term!.onWriteParsed).toHaveBeenCalledTimes(1);
+            const emit = vi.mocked(booba.term!.onWriteParsed).mock.calls[0][0] as unknown as (data: string | Uint8Array) => void;
+            emit('parsed');
+            expect(seen).toHaveBeenCalledWith('parsed');
+
+            booba.onWriteParsed = null;
+            const keyEvent: KeyEvent = { key: Key.ARROW_UP, action: KeyAction.PRESS, mods: Mods.NONE };
+            booba.sendKey(keyEvent);
+            expect(booba.term!.sendKey).toHaveBeenCalledWith(keyEvent);
         } finally {
             booba.dispose();
             container.remove();

@@ -32,7 +32,8 @@ export class Terminal implements TerminalEvents {
     constructor(options: Record<string, unknown> = {}) { this.options = options; }
     open = vi.fn(async (_host: HTMLElement) => {});
     loadAddon = vi.fn(); dispose = vi.fn();
-    write = vi.fn(); input = vi.fn(); reset = vi.fn();
+    write = vi.fn(); input = vi.fn(); sendKey = vi.fn(); reset = vi.fn();
+    onWriteParsed = handler();
     onResize = handler(); onData = handler(); onBell = handler(); onSelectionChange = handler();
     onKey = handler(); onTitleChange = handler(); onScroll = handler(); onRender = handler(); onCursorMove = handler();
     onProgramStatus = handler();
@@ -42,6 +43,11 @@ export class Terminal implements TerminalEvents {
 
 export class FitAddon { fit = vi.fn(); observeResize = vi.fn(); }
 export class SearchAddon {}
+export class AutomationAddon {}
+
+export const Key = { A: 20, ENTER: 49, ARROW_UP: 58 } as const;
+export const KeyAction = { RELEASE: 0, PRESS: 1, REPEAT: 2 } as const;
+export const Mods = { NONE: 0, SHIFT: 1, CTRL: 2, ALT: 4, SUPER: 8, CAPSLOCK: 16, NUMLOCK: 32 } as const;
 
 export const installRendererHud = vi.fn();
 export const parseRendererFromURL = vi.fn();

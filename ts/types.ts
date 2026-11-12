@@ -83,4 +83,8 @@ export type {
     SemanticPromptEvent,
     ResizeRequest,
     LibghosttyBuildInfo,
+    TerminalSnapshot,
+    AutomationWaitOptions,
+    TerminalTraceEvent,
+    KeyEvent,
 } from 'ntwebterm';

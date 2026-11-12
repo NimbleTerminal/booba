@@ -49,7 +49,7 @@ adjust our wrapper code for API changes.
 - **Source branch:** `main` — NimbleTerminal’s browser layer, descended from Coder’s wrapper.
 - **Coder upstream:** `github.com/coder/ghostty-web`. Parity checks for
   the Terminal API surface are manual.
-- **Last fork API parity check:** 2026-11-08 (`25cb576`, built from `dc24287`; ntwebterm v0.5.0 / libghostty-vt 1.0.0)
+- **Last fork API parity check:** 2026-11-11 (`054cb43`, built from `ee332c9`; ntwebterm v0.6.0 / libghostty-vt 1.0.0)
 - **Last coder upstream API parity check:** 2026-04-15
 
 ### What comes from upstream
@@ -58,7 +58,7 @@ adjust our wrapper code for API changes.
 
 | File | Description |
 |------|-------------|
-| `serve/static/ntwebterm/ntwebterm.js` | Terminal emulation engine + public API (including `SearchAddon`, `installRendererHud`, `parseRendererFromURL`, `forwardNotificationsToBrowser`, `writeTextToClipboard`) compiled from libghostty |
+| `serve/static/ntwebterm/ntwebterm.js` | Terminal emulation engine + public API (including `SearchAddon`, `AutomationAddon`, `installRendererHud`, `parseRendererFromURL`, `forwardNotificationsToBrowser`, `writeTextToClipboard`) compiled from libghostty |
 | `serve/static/ntwebterm/ghostty-vt.wasm` | WASM binary for VT100 parsing |
 | `serve/static/ntwebterm/__vite-*.js` | Runtime chunks imported by the ESM bundle |
 
@@ -118,21 +118,22 @@ When upstream ntwebterm updates, check:
    (upstream `lib/interfaces.ts`) that `BoobaTerminalOptions` should mirror.
    Currently booba surfaces: `fontSize`, `fontFamily`, `fontFaces`, `cols`, `rows`,
    `cursorBlink`, `cursorStyle`, `scrollback`, `allowTransparency`,
-   `convertEol`, `disableStdin`, `smoothScrollDuration`, `theme`, `renderer`,
-   `clipboardWrite`, `clipboardRead`, `allowUnsafePaste`, `colorScheme`, plus
-   booba-specific `allowOSC52` and `allowOSC7501Actions`. Watch for additions upstream.
+   `convertEol`, `disableStdin`, `macOptionIsMeta`, `smoothScrollDuration`, `theme`,
+   `renderer`, `clipboardWrite`, `clipboardRead`, `allowUnsafePaste`, `colorScheme`,
+   plus booba-specific `allowOSC52` and `allowOSC7501Actions`. Watch for additions upstream.
 
 2. **Terminal API surface** — New public methods/getters on `Terminal` (upstream
    `lib/terminal.ts`) that `BoobaTerminal` should proxy. Currently booba
-   covers: write, writeln, paste, input, focus, blur, clear, reset,
+   covers: write, writeln, paste, input, sendKey, focus, blur, clear, reset,
    selection, scrolling, link providers, mode queries, custom event handlers,
    `pwd`, `ghosttyVersion`, `ghosttyBuildInfo`, and re-exports `SearchAddon`,
-   `forwardNotificationsToBrowser`, and `writeTextToClipboard`.
+   `AutomationAddon`, `Key`, `KeyAction`, `Mods`, `forwardNotificationsToBrowser`,
+   and `writeTextToClipboard`.
 
-3. **FitAddon / SearchAddon changes** — The `fit()` / `observeResize()` API in upstream
-   `lib/addons/fit.ts` and `SearchAddon` in `lib/addons/search.ts`.
+3. **FitAddon / SearchAddon / AutomationAddon changes** — The `fit()` / `observeResize()` API in upstream
+   `lib/addons/fit.ts`, `SearchAddon` in `lib/addons/search.ts`, and `AutomationAddon` in `lib/addons/automation.ts`.
 
-4. **Event surface** — Booba wires all upstream events: onData, onResize,
+4. **Event surface** — Booba wires all upstream events: onWriteParsed, onData, onResize,
    onBell, onSelectionChange, onKey, onTitleChange, onScroll, onRender,
    onCursorMove, onProgramStatus, onClipboardWrite, onPwdChange,
    onNotification, onProgress, onSemanticPrompt, onResizeRequest. Watch for new events upstream.

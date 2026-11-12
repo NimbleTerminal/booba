@@ -21,6 +21,7 @@ import type {
     SemanticPromptEvent,
     ResizeRequest,
     LibghosttyBuildInfo,
+    KeyEvent,
 } from './types.js';
 import { applyThemeProperties } from './theme_properties.js';
 import { TouchInput } from './touch_input.js';
@@ -70,6 +71,11 @@ export interface BoobaTerminalOptions {
     allowTransparency?: boolean;
     convertEol?: boolean;
     disableStdin?: boolean;
+    /**
+     * Treat the macOS Option key as Alt/Meta (Option+b sends ESC b) instead of
+     * letting it compose characters (Option+b types "∫"). Default: false.
+     */
+    macOptionIsMeta?: boolean;
     smoothScrollDuration?: number;
     theme?: BoobaTheme;
     renderer?: RendererBackend;
@@ -165,6 +171,30 @@ export class BoobaTerminal {
     onSemanticPrompt: ((event: SemanticPromptEvent) => void) | null = null;
     onResizeRequest: ((request: ResizeRequest) => void) | null = null;
 
+    private writeParsedSubscription: { dispose(): void } | null = null;
+    private writeParsedCallback: ((data: string | Uint8Array) => void) | null = null;
+
+    get onWriteParsed(): ((data: string | Uint8Array) => void) | null {
+        return this.writeParsedCallback;
+    }
+
+    set onWriteParsed(callback: ((data: string | Uint8Array) => void) | null) {
+        this.writeParsedCallback = callback;
+        this.syncWriteParsed();
+    }
+
+    // Subscribe only when a caller observes onWriteParsed so ntwebterm keeps its
+    // zero-copy write path when nobody is listening.
+    private syncWriteParsed(): void {
+        this.writeParsedSubscription?.dispose();
+        this.writeParsedSubscription = null;
+        if (this.writeParsedCallback && this.term) {
+            this.writeParsedSubscription = this.term.onWriteParsed((data) => {
+                this.writeParsedCallback?.(data);
+            });
+        }
+    }
+
     constructor(containerId: string, options: BoobaTerminalOptions = {}) {
         this.container = document.getElementById(containerId);
         const allowOSC52 = options.allowOSC52 ?? false;
@@ -254,6 +284,7 @@ export class BoobaTerminal {
         const term = new Terminal(this.options);
         this.term = term;
         this.syncProgramStatus();
+        this.syncWriteParsed();
 
         this.fitAddon = new FitAddon();
         term.loadAddon(this.fitAddon);
@@ -541,6 +572,11 @@ export class BoobaTerminal {
         this.term?.input(data, true);
     }
 
+    /** Encode a key event using the terminal's current keyboard modes and send it as input */
+    sendKey(event: KeyEvent): void {
+        this.term?.sendKey(event);
+    }
+
     /** Focus the terminal */
     focus(): void {
         this.term?.focus();
@@ -633,6 +669,8 @@ export class BoobaTerminal {
         this._dprCleanup = null;
         this.programStatusSubscription?.dispose();
         this.programStatusSubscription = null;
+        this.writeParsedSubscription?.dispose();
+        this.writeParsedSubscription = null;
         this.programStatus.clear();
         this.term?.dispose();
         this.term = null;
@@ -757,13 +795,21 @@ export type {
     SemanticPromptEvent,
     ResizeRequest,
     LibghosttyBuildInfo,
+    TerminalSnapshot,
+    AutomationWaitOptions,
+    TerminalTraceEvent,
+    KeyEvent,
 } from './types.js';
 
-// HUD, Search, Clipboard, and Notification utilities — re-exported from ntwebterm
+// HUD, Search, Automation, Clipboard, and Notification utilities — re-exported from ntwebterm
 export {
     installRendererHud,
     parseRendererFromURL,
     SearchAddon,
+    AutomationAddon,
+    Key,
+    KeyAction,
+    Mods,
     forwardNotificationsToBrowser,
     writeTextToClipboard,
 } from 'ntwebterm';

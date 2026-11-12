@@ -54,6 +54,24 @@ export class BoobaTerminal {
             });
         }
     }
+    get onWriteParsed() {
+        return this.writeParsedCallback;
+    }
+    set onWriteParsed(callback) {
+        this.writeParsedCallback = callback;
+        this.syncWriteParsed();
+    }
+    // Subscribe only when a caller observes onWriteParsed so ntwebterm keeps its
+    // zero-copy write path when nobody is listening.
+    syncWriteParsed() {
+        this.writeParsedSubscription?.dispose();
+        this.writeParsedSubscription = null;
+        if (this.writeParsedCallback && this.term) {
+            this.writeParsedSubscription = this.term.onWriteParsed((data) => {
+                this.writeParsedCallback?.(data);
+            });
+        }
+    }
     constructor(containerId, options = {}) {
         this.container = null;
         this.term = null;
@@ -84,6 +102,8 @@ export class BoobaTerminal {
         this.onProgress = null;
         this.onSemanticPrompt = null;
         this.onResizeRequest = null;
+        this.writeParsedSubscription = null;
+        this.writeParsedCallback = null;
         this.container = document.getElementById(containerId);
         const allowOSC52 = options.allowOSC52 ?? false;
         const clipboardWrite = options.clipboardWrite ?? (allowOSC52 ? 'browser' : 'deny');
@@ -180,6 +200,7 @@ export class BoobaTerminal {
         const term = new Terminal(this.options);
         this.term = term;
         this.syncProgramStatus();
+        this.syncWriteParsed();
         this.fitAddon = new FitAddon();
         term.loadAddon(this.fitAddon);
         // CRITICAL: term.open() is async and must be awaited. Without the await,
@@ -430,6 +451,10 @@ export class BoobaTerminal {
     input(data) {
         this.term?.input(data, true);
     }
+    /** Encode a key event using the terminal's current keyboard modes and send it as input */
+    sendKey(event) {
+        this.term?.sendKey(event);
+    }
     /** Focus the terminal */
     focus() {
         this.term?.focus();
@@ -510,6 +535,8 @@ export class BoobaTerminal {
         this._dprCleanup = null;
         this.programStatusSubscription?.dispose();
         this.programStatusSubscription = null;
+        this.writeParsedSubscription?.dispose();
+        this.writeParsedSubscription = null;
         this.programStatus.clear();
         this.term?.dispose();
         this.term = null;
@@ -595,8 +622,8 @@ export { BoobaAutoAdapter } from './auto_adapter.js';
 export { BoobaWebTransportAdapter } from './webtransport_adapter.js';
 export { OSC52Scanner } from './clipboard.js';
 export { resolveBoobaURLs } from './urls.js';
-// HUD, Search, Clipboard, and Notification utilities — re-exported from ntwebterm
-export { installRendererHud, parseRendererFromURL, SearchAddon, forwardNotificationsToBrowser, writeTextToClipboard, } from '../ntwebterm/ntwebterm.js';
+// HUD, Search, Automation, Clipboard, and Notification utilities — re-exported from ntwebterm
+export { installRendererHud, parseRendererFromURL, SearchAddon, AutomationAddon, Key, KeyAction, Mods, forwardNotificationsToBrowser, writeTextToClipboard, } from '../ntwebterm/ntwebterm.js';
 // Transport-independent terminal actions and optional host UI.
 export { ActionController, ACTION_LIMITS, validateActionSnapshot, decodeActionSnapshot } from './actions.js';
 export { installActionBar, ACTION_BAR_CSS } from './action_bar.js';

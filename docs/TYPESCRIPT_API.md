@@ -40,12 +40,13 @@ booba.focus();
 
 ## Terminal Options
 
-Supported terminal options include `fontSize`, `fontFamily`, `fontFaces`, `cols`, `rows`, `cursorBlink`, `cursorStyle`, `scrollback`, `allowOSC52`, `clipboardWrite`, `clipboardRead`, `allowUnsafePaste`, `colorScheme`, `allowOSC7501Actions`, `allowTransparency`, `convertEol`, `disableStdin`, `smoothScrollDuration`, `renderer`, and a full `theme` with 16-color palette and cursor/selection colors.
+Supported terminal options include `fontSize`, `fontFamily`, `fontFaces`, `cols`, `rows`, `cursorBlink`, `cursorStyle`, `scrollback`, `allowOSC52`, `clipboardWrite`, `clipboardRead`, `allowUnsafePaste`, `colorScheme`, `allowOSC7501Actions`, `allowTransparency`, `convertEol`, `disableStdin`, `macOptionIsMeta`, `smoothScrollDuration`, `renderer`, and a full `theme` with 16-color palette and cursor/selection colors.
 
 - **`allowOSC52`** / **`clipboardWrite`**: By default (`allowOSC52: false`), OSC 52 / OSC 5522 clipboard writes from programs are refused (`clipboardWrite: 'deny'`). Setting `allowOSC52: true` enables copying to the browser clipboard (`clipboardWrite: 'browser'`). You can also set `clipboardWrite` directly (`'browser'`, `'event'`, or `'deny'`), which overrides `allowOSC52`.
 - **`clipboardRead`**: Optional synchronous callback answering OSC 52 `?` / OSC 5522 clipboard read requests. Unset (`null`) by default so programs cannot read the clipboard silently.
 - **`allowUnsafePaste`**: Controls pastes containing line terminators outside bracketed paste or the bracketed paste end marker (`true` by default, `false` to drop, or a `(text: string) => boolean` confirmation callback).
 - **`colorScheme`**: Answer to `CSI ? 996 n` color-scheme queries (`'auto'` by default, derived from `theme.background` luminance, or `'light'` / `'dark'`).
+- **`macOptionIsMeta`**: Treat the macOS Option key as Alt/Meta (`Option+b` sends `ESC b`) instead of composing characters (`false` by default).
 
 After `init()`, the container element carries the resolved `theme.background` and `theme.foreground` as the CSS custom properties `--booba-background` and `--booba-foreground`. They inherit to the container and its descendants only, so the padding around the canvas can use `var(--booba-background)` without repeating the hex value.
 
@@ -109,6 +110,7 @@ booba.getViewportY()       // Get current scroll position
 ```javascript
 booba.paste(data)          // Paste with bracketed paste support
 booba.input(data)          // Input as if typed
+booba.sendKey(event)       // Encode KeyEvent with current terminal modes and send as input
 booba.focus()              // Focus terminal
 booba.blur()               // Remove focus
 booba.clear()              // Clear screen
@@ -130,6 +132,7 @@ booba.getMode(mode, isAnsi) // Query arbitrary terminal mode
 
 ```javascript
 booba.onStatusChange = (state, message) => { /* connection state */ };
+booba.onWriteParsed = (data) => { /* output chunk after terminal parsing */ };
 booba.onTitleChange = (title) => { /* program set window title */ };
 booba.onBell = () => { /* bell/beep fired */ };
 booba.onSelectionChange = () => { /* selection changed */ };
@@ -237,6 +240,24 @@ search.findPrevious('error');
 search.clearDecorations();
 ```
 
+## Automation (`AutomationAddon`)
+
+Booba re-exports `AutomationAddon`, along with `Key`, `KeyAction`, and `Mods`, for transport-independent terminal inspection, waiting, key encoding, and I/O tracing:
+
+```javascript
+import { AutomationAddon, Key, KeyAction, Mods } from '@nimbleterminal/booba';
+
+const automation = new AutomationAddon();
+booba.terminal.loadAddon(automation);
+
+const snap = automation.snapshot();
+automation.sendKeys([{ key: Key.ENTER, action: KeyAction.PRESS, mods: Mods.NONE }]);
+await automation.waitForText('ready', { timeoutMs: 5000 });
+await automation.waitForPrompt(); // waits for primary OSC 133 input-start
+const trace = automation.trace((event) => console.log(event.direction, event.data));
+// Later: trace.dispose();
+```
+
 ## Renderer HUD (Optional Dev Feature)
 
 Display active renderer backend and live FPS in a corner badge. Booba re-exports ntwebterm's renderer HUD for convenience.
@@ -320,6 +341,10 @@ import type {
     SemanticPromptEvent,
     ResizeRequest,
     LibghosttyBuildInfo,
+    TerminalSnapshot,
+    AutomationWaitOptions,
+    TerminalTraceEvent,
+    KeyEvent,
 } from './booba/booba.js';
 ```
 

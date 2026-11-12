@@ -4,17 +4,18 @@
 
 ### Added
 
-- Surface `ntwebterm` v0.5.0 options (`clipboardWrite`, `clipboardRead`,
-  `allowUnsafePaste`, `colorScheme`), effect events (`onClipboardWrite`,
-  `onPwdChange`, `onNotification`, `onProgress`, `onSemanticPrompt`,
-  `onResizeRequest`), getters (`pwd`, `ghosttyVersion`, `ghosttyBuildInfo`), and
-  re-exports (`SearchAddon`, `forwardNotificationsToBrowser`,
+- Surface `ntwebterm` v0.5.0–v0.6.0 options (`clipboardWrite`, `clipboardRead`,
+  `allowUnsafePaste`, `colorScheme`, `macOptionIsMeta`), events (`onWriteParsed`,
+  `onClipboardWrite`, `onPwdChange`, `onNotification`, `onProgress`,
+  `onSemanticPrompt`, `onResizeRequest`), methods/getters (`sendKey`, `pwd`,
+  `ghosttyVersion`, `ghosttyBuildInfo`), and re-exports (`SearchAddon`,
+  `AutomationAddon`, `Key`, `KeyAction`, `Mods`, `forwardNotificationsToBrowser`,
   `writeTextToClipboard`).
 
 ### Changed
 
-- Refresh ntwebterm to v0.5.0 (libghostty-vt 1.0.0), built commit `25cb576` from
-  source `dc24287`. Map `allowOSC52` to `clipboardWrite` (`'deny'` by default,
+- Refresh ntwebterm to v0.6.0 (libghostty-vt 1.0.0), built commit `054cb43` from
+  source `ee332c9`. Map `allowOSC52` to `clipboardWrite` (`'deny'` by default,
   `'browser'` when enabled) so native OSC 52 / 5522 handling respects booba's
   opt-in clipboard policy.
 - `BoobaTerminal` no longer scans program output with `OSC52Scanner`; ntwebterm
